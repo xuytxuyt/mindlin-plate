@@ -63,9 +63,13 @@ prescribeForFem = quote
     prescribe!(elements["Γ₃"],:M₂₂=>(x,y,z)->M₂₂(x,y))
     prescribe!(elements["Γ₄"],:M₂₂=>(x,y,z)->M₂₂(x,y))
 
-    prescribe!(elements["Ω"], :u=>(x,y,z)->w(x,y))
-    # prescribe!(elements["Ω"], :∂u∂x=>(x,y,z)->w₁(x,y))
-    # prescribe!(elements["Ω"], :∂u∂y=>(x,y,z)->w₂(x,y))
-    prescribe!(elements["Ω"], :q=>(x,y,z)->-Q₁₁(x,y)-Q₂₂(x,y))
+    prescribe!(elements["Ω"],:u=>(x,y,z)->w(x,y))
+    # prescribe!(elements["Ω"],:∂u∂x=>(x,y,z)->w₁(x,y))
+    # prescribe!(elements["Ω"],:∂u∂y=>(x,y,z)->w₂(x,y))
+    prescribe!(elements["Ω"],:q=>(x,y,z)->-Q₁₁(x,y)-Q₂₂(x,y))
+    prescribe!(elements["Ω"],:M₁ᵢᵢ=>(x,y,z)->M₁₁₁(x,y)+M₁₂₂(x,y))
+    prescribe!(elements["Ω"],:M₂ᵢᵢ=>(x,y,z)->M₁₂₁(x,y)+M₂₂₂(x,y))
+    prescribe!(elements["Ω"],:Q₁=>(x,y,z)->Q₁(x,y))
+    prescribe!(elements["Ω"],:Q₂=>(x,y,z)->Q₂(x,y))
 
 end
