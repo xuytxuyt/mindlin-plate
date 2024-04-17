@@ -63,6 +63,7 @@ prescribeForFem = quote
     prescribe!(elements["Γ₃"],:M₂₂=>(x,y,z)->M₂₂(x,y))
     prescribe!(elements["Γ₄"],:M₂₂=>(x,y,z)->M₂₂(x,y))
 
+    # prescribe!(elements["Ω"],:u=>(x,y,z)->θ₁(x,y))
     prescribe!(elements["Ω"],:u=>(x,y,z)->w(x,y))
     # prescribe!(elements["Ω"],:∂u∂x=>(x,y,z)->w₁(x,y))
     # prescribe!(elements["Ω"],:∂u∂y=>(x,y,z)->w₂(x,y))
