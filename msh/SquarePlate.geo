@@ -1,7 +1,7 @@
 
 a = 1.0;
 b = 1.0;
-n = 3;
+n = 8;
 
 Point(1) = {0.0, 0.0, 0.0};
 Point(2) = {  a, 0.0, 0.0};
@@ -19,13 +19,13 @@ Plane Surface(1) = {1};
 
 Transfinite Curve{1,2,3,4} = n;
 Transfinite Surface{1};
-Physical Curve("Γ₁") = {1};
-Physical Curve("Γ₂") = {2};
-Physical Curve("Γ₃") = {3};
-Physical Curve("Γ₄") = {4};
+Physical Curve("Γᵇ") = {1};
+Physical Curve("Γʳ") = {2};
+Physical Curve("Γᵗ") = {3};
+Physical Curve("Γˡ") = {4};
 Physical Surface("Ω") = {1};
 
 Mesh.Algorithm = 1;
 Mesh.MshFileVersion = 2;
 Mesh 2;
-RecombineMesh;
+//RecombineMesh;

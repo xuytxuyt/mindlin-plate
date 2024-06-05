@@ -6,7 +6,9 @@ function import_patch_test_fem(filename::String)
     gmsh.initialize()
     gmsh.open(filename)
 
-    integrationOrder = 2
+    integrationOrder = 2     # Tri3
+    # integrationOrder = 3     # Quad4 
+    integrationOrder_Ωᵍ = 10
     entities = getPhysicalGroups()
     nodes = get𝑿ᵢ()
     x = nodes.x
@@ -14,13 +16,103 @@ function import_patch_test_fem(filename::String)
     z = nodes.z
     elements = Dict{String,Vector{ApproxOperator.AbstractElement}}()
     elements["Ω"] = getElements(nodes, entities["Ω"], integrationOrder)
+    elements["Ωᵍ"] = getElements(nodes, entities["Ω"], integrationOrder_Ωᵍ)
+    elements["Γ₁"] = getElements(nodes, entities["Γ₁"], integrationOrder,normal=true)
+    elements["Γ₂"] = getElements(nodes, entities["Γ₂"], integrationOrder,normal=true)
+    elements["Γ₃"] = getElements(nodes, entities["Γ₃"], integrationOrder,normal=true)
+    elements["Γ₄"] = getElements(nodes, entities["Γ₄"], integrationOrder,normal=true)
+    push!(elements["Ωᵍ"], :𝝭=>:𝑠, :∂𝝭∂x=>:𝑠, :∂𝝭∂y=>:𝑠)
+    # gmsh.finalize()
+    return elements, nodes
+end
+
+function import_patch_test_quad_RI(filename1::String,filename2::String)
+    gmsh.initialize()
+    gmsh.open(filename1)
+
+    integrationOrder = 3
+    integrationOrder_Ωᵍ = 10
+    entities = getPhysicalGroups()
+    nodes = get𝑿ᵢ()
+    x = nodes.x
+    y = nodes.y
+    z = nodes.z
+    elements = Dict{String,Vector{ApproxOperator.AbstractElement}}()
+    elements["Ω"] = getElements(nodes, entities["Ω"], integrationOrder)
+    elements["Ωᵍ"] = getElements(nodes, entities["Ω"], integrationOrder_Ωᵍ)
     elements["Γ₁"] = getElements(nodes, entities["Γ₁"], integrationOrder,normal=true)
     elements["Γ₂"] = getElements(nodes, entities["Γ₂"], integrationOrder,normal=true)
     elements["Γ₃"] = getElements(nodes, entities["Γ₃"], integrationOrder,normal=true)
     elements["Γ₄"] = getElements(nodes, entities["Γ₄"], integrationOrder,normal=true)
 
+    gmsh.open(filename2)
+    integrationOrder_Ωˢ = 0
+    entities = getPhysicalGroups()
+    nodes_s = get𝑿ᵢ()
+    elements["Ωˢ"] = getElements(nodes_s, entities["Ω"], integrationOrder_Ωˢ)
+    push!(elements["Ωˢ"], :𝝭=>:𝑠, :∂𝝭∂x=>:𝑠, :∂𝝭∂y=>:𝑠)
+    push!(elements["Ωᵍ"], :𝝭=>:𝑠, :∂𝝭∂x=>:𝑠, :∂𝝭∂y=>:𝑠)
     # gmsh.finalize()
-    return elements, nodes
+    return elements, nodes, nodes_s
+end
+
+function import_patch_test_mix(filename1::String,filename2::String)
+    gmsh.initialize()
+    gmsh.open(filename1)
+
+    # integrationOrder = 2      # Tri3
+    integrationOrder = 3      # Quad4
+    integrationOrder_Ωᵍ = 10
+    entities = getPhysicalGroups()
+    nodes = get𝑿ᵢ()
+    x = nodes.x
+    y = nodes.y
+    z = nodes.z
+    elements = Dict{String,Vector{ApproxOperator.AbstractElement}}()
+    elements["Ω"] = getElements(nodes, entities["Ω"], integrationOrder)
+    elements["Ωᵍ"] = getElements(nodes, entities["Ω"], integrationOrder_Ωᵍ)
+    elements["Γ₁"] = getElements(nodes, entities["Γ₁"], integrationOrder,normal=true)
+    elements["Γ₂"] = getElements(nodes, entities["Γ₂"], integrationOrder,normal=true)
+    elements["Γ₃"] = getElements(nodes, entities["Γ₃"], integrationOrder,normal=true)
+    elements["Γ₄"] = getElements(nodes, entities["Γ₄"], integrationOrder,normal=true)
+
+    gmsh.open(filename2)
+    entities = getPhysicalGroups()
+    nodes_s = get𝑿ᵢ()
+    elements["Ωˢ"] = getElements(nodes_s, entities["Ω"], integrationOrder)
+    push!(elements["Ωˢ"], :𝝭=>:𝑠, :∂𝝭∂x=>:𝑠, :∂𝝭∂y=>:𝑠)
+    push!(elements["Ωᵍ"], :𝝭=>:𝑠, :∂𝝭∂x=>:𝑠, :∂𝝭∂y=>:𝑠)
+    # gmsh.finalize()
+    return elements, nodes, nodes_s
+end
+
+function import_patch_test_quad_mix(filename1::String,filename2::String)
+    gmsh.initialize()
+    gmsh.open(filename1)
+
+    integrationOrder = 3
+    integrationOrder_Ωᵍ = 10
+    entities = getPhysicalGroups()
+    nodes = get𝑿ᵢ()
+    x = nodes.x
+    y = nodes.y
+    z = nodes.z
+    elements = Dict{String,Vector{ApproxOperator.AbstractElement}}()
+    elements["Ω"] = getElements(nodes, entities["Ω"], integrationOrder)
+    elements["Ωᵍ"] = getElements(nodes, entities["Ω"], integrationOrder_Ωᵍ)
+    elements["Γ₁"] = getElements(nodes, entities["Γ₁"], integrationOrder,normal=true)
+    elements["Γ₂"] = getElements(nodes, entities["Γ₂"], integrationOrder,normal=true)
+    elements["Γ₃"] = getElements(nodes, entities["Γ₃"], integrationOrder,normal=true)
+    elements["Γ₄"] = getElements(nodes, entities["Γ₄"], integrationOrder,normal=true)
+
+    gmsh.open(filename2)
+    entities = getPhysicalGroups()
+    nodes_s = get𝑿ᵢ()
+    elements["Ωˢ"] = getElements(nodes_s, entities["Ω"], integrationOrder)
+    push!(elements["Ωˢ"], :𝝭=>:𝑠, :∂𝝭∂x=>:𝑠, :∂𝝭∂y=>:𝑠)
+    push!(elements["Ωᵍ"], :𝝭=>:𝑠, :∂𝝭∂x=>:𝑠, :∂𝝭∂y=>:𝑠)
+    # gmsh.finalize()
+    return elements, nodes, nodes_s
 end
 prescribeForFem = quote
     push!(elements["Ω"], :𝝭=>:𝑠, :∂𝝭∂x=>:𝑠, :∂𝝭∂y=>:𝑠)
@@ -67,9 +159,9 @@ prescribeForFem = quote
     prescribe!(elements["Ω"],:u=>(x,y,z)->w(x,y))
     # prescribe!(elements["Ω"],:∂u∂x=>(x,y,z)->w₁(x,y))
     # prescribe!(elements["Ω"],:∂u∂y=>(x,y,z)->w₂(x,y))
+    # prescribe!(elements["Ω"],:M₁ᵢᵢ=>(x,y,z)->M₁₁₁(x,y)+M₁₂₂(x,y))
+    # prescribe!(elements["Ω"],:M₂ᵢᵢ=>(x,y,z)->M₁₂₁(x,y)+M₂₂₂(x,y))
     prescribe!(elements["Ω"],:q=>(x,y,z)->-Q₁₁(x,y)-Q₂₂(x,y))
-    prescribe!(elements["Ω"],:M₁ᵢᵢ=>(x,y,z)->M₁₁₁(x,y)+M₁₂₂(x,y))
-    prescribe!(elements["Ω"],:M₂ᵢᵢ=>(x,y,z)->M₁₂₁(x,y)+M₂₂₂(x,y))
     prescribe!(elements["Ω"],:Q₁=>(x,y,z)->Q₁(x,y))
     prescribe!(elements["Ω"],:Q₂=>(x,y,z)->Q₂(x,y))
 
