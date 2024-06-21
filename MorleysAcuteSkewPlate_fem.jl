@@ -3,7 +3,7 @@ using ApproxOperator, JLD, XLSX
 import BenchmarkExample: BenchmarkExample
 
 include("import_MorleysAcuteSkewPlate.jl")
-ndiv = 8
+ndiv = 64
 elements, nodes = import_MorleysAcuteSkewPlate("msh/MorleysAcuteSkewPlate_"*string(ndiv)*".msh");
 nₚ = length(nodes)
 
@@ -61,11 +61,11 @@ w = ops𝐴(elements["𝐴"])
 wᶜ= w*10^3*Dᵇ/(F*L^4)
 e = abs(wᶜ[1]-𝑣)
 # println(wᶜ)
-# index = [8,16,32,64]
-# XLSX.openxlsx("./xlsx/MorleysAcuteSkewPlate.xlsx", mode="rw") do xf
-#     Sheet = xf[1]
-#     ind = findfirst(n->n==ndiv,index)+11
-#     Sheet["B"*string(ind)] = log10(100/ndiv)
-#     Sheet["C"*string(ind)] = wᶜ
-#     Sheet["D"*string(ind)] = log10(e)
-# end
+index = [8,16,32,64]
+XLSX.openxlsx("./xlsx/MorleysAcuteSkewPlate.xlsx", mode="rw") do xf
+    Sheet = xf[1]
+    ind = findfirst(n->n==ndiv,index)+1
+    Sheet["B"*string(ind)] = log10(100/ndiv)
+    Sheet["C"*string(ind)] = wᶜ
+    Sheet["D"*string(ind)] = log10(e)
+end

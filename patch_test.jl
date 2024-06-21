@@ -5,7 +5,8 @@ import BenchmarkExample: BenchmarkExample
 include("import_patch_test.jl")
 ndiv = 8
 # elements, nodes = import_patch_test_fem("msh/patchtest_"*string(ndiv)*".msh");
-elements, nodes = import_patch_test_fem("msh/patchtest_quad_"*string(ndiv)*".msh");
+# elements, nodes = import_patch_test_fem("msh/patchtest_quad_"*string(ndiv)*".msh");
+elements, nodes = import_patch_test_fem("msh/square_quad8_8.msh");
 
 nₚ = length(nodes)
 
@@ -15,35 +16,35 @@ h = 1
 Dᵇ = E*h^3/12/(1-ν^2)
 Dˢ = 5/6*E*h/(2*(1+ν))
 
-w(x,y) = -Dᵇ/Dˢ*8*x-Dᵇ/Dˢ*8*y+x^3+y^3+x^2*y+x*y^2
-w₁(x,y) = -Dᵇ/Dˢ*8+3*x^2+2*x*y+y^2
-w₂(x,y) = -Dᵇ/Dˢ*8+3*y^2+x^2+2*x*y
-w₁₁(x,y) = 6*x+2*y
-w₂₂(x,y) = 2*x+6*y
-θ₁(x,y) = 3*x^2+2*x*y+y^2
-θ₂(x,y) = 3*y^2+x^2+2*x*y
-θ₁₁(x,y) = 6*x+2*y
-θ₁₂(x,y) = 2*x+2*y
-θ₂₂(x,y) = 2*x+6*y
+# w(x,y) = -Dᵇ/Dˢ*8*x-Dᵇ/Dˢ*8*y+x^3+y^3+x^2*y+x*y^2
+# w₁(x,y) = -Dᵇ/Dˢ*8+3*x^2+2*x*y+y^2
+# w₂(x,y) = -Dᵇ/Dˢ*8+3*y^2+x^2+2*x*y
+# w₁₁(x,y) = 6*x+2*y
+# w₂₂(x,y) = 2*x+6*y
+# θ₁(x,y) = 3*x^2+2*x*y+y^2
+# θ₂(x,y) = 3*y^2+x^2+2*x*y
+# θ₁₁(x,y) = 6*x+2*y
+# θ₁₂(x,y) = 2*x+2*y
+# θ₂₂(x,y) = 2*x+6*y
 
-# w(x,y) = x+y+x^2/2+x*y+y^2/2
-# w₁(x,y) = 1+x+y
-# w₂(x,y) = 1+x+y
-# w₁₁(x,y) = 1
-# w₂₂(x,y) = 1
-# θ₁(x,y) = 1+x+y
-# θ₂(x,y) = 1+x+y
-# θ₁₁(x,y)  = 1
-# θ₁₂(x,y)  = 1
-# θ₂₂(x,y)  = 1
+w(x,y) = x+y+x^2/2+x*y+y^2/2
+w₁(x,y) = 1+x+y
+w₂(x,y) = 1+x+y
+w₁₁(x,y) = 1
+w₂₂(x,y) = 1
+θ₁(x,y) = 1+x+y
+θ₂(x,y) = 1+x+y
+θ₁₁(x,y)  = 1
+θ₁₂(x,y)  = 1
+θ₂₂(x,y)  = 1
 
-# n = 2
+# n = 1
 # w(x,y) = (x+y)^n
 # w₁(x,y) = n*(x+y)^abs(n-1)
 # w₂(x,y) = n*(x+y)^abs(n-1)
 # w₁₁(x,y) = n*(n-1)*(x+y)^abs(n-2)
 # w₂₂(x,y) = n*(n-1)*(x+y)^abs(n-2)
-# m = 1
+# m = 0
 # θ₁(x,y) = (x+y)^m
 # θ₂(x,y) = (x+y)^m
 # θ₁₁(x,y)  = m*(x+y)^abs(m-1)
@@ -104,18 +105,18 @@ ops[6](elements["Γ₁"],k,f)
 ops[6](elements["Γ₂"],k,f)
 ops[6](elements["Γ₃"],k,f)
 ops[6](elements["Γ₄"],k,f)
-# ops[7](elements["Γ₁"],k,f)
-# ops[7](elements["Γ₂"],k,f)
-# ops[7](elements["Γ₃"],k,f)
-# ops[7](elements["Γ₄"],k,f)
+ops[7](elements["Γ₁"],k,f)
+ops[7](elements["Γ₂"],k,f)
+ops[7](elements["Γ₃"],k,f)
+ops[7](elements["Γ₄"],k,f)
 # ops[8](elements["Γ₁"],f)
 # ops[8](elements["Γ₂"],f)
 # ops[8](elements["Γ₃"],f)
 # ops[8](elements["Γ₄"],f)
-ops[9](elements["Γ₁"],f)
-ops[9](elements["Γ₂"],f)
-ops[9](elements["Γ₃"],f)
-ops[9](elements["Γ₄"],f)
+# ops[9](elements["Γ₁"],f)
+# ops[9](elements["Γ₂"],f)
+# ops[9](elements["Γ₃"],f)
+# ops[9](elements["Γ₄"],f)
 
 d = (kᵇ+kˢ+k)\f
 d₁ = d[1:3:3*nₚ]
@@ -130,7 +131,7 @@ set𝝭!(elements["Ωᵍ"])
 set∇𝝭!(elements["Ωᵍ"])
 prescribe!(elements["Ωᵍ"],:u=>(x,y,z)->w(x,y))
 L₂ = ops[10](elements["Ωᵍ"])
-a = log10(L₂)
+# a = log10(L₂)
 # index = [8,16,32,64]
 # XLSX.openxlsx("./xlsx/patch_test.xlsx", mode="rw") do xf
 #     Sheet = xf[5]

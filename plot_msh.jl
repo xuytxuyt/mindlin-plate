@@ -3,7 +3,7 @@ using ApproxOperator, GLMakie
 
 import Gmsh: gmsh
 
-ndiv = 64
+ndiv = 8
 gmsh.initialize()
 gmsh.open("./msh/Circular_"*string(ndiv)*".msh")
 # gmsh.open("./msh/MorleysAcuteSkewPlate_"*string(ndiv)*".msh")
@@ -14,13 +14,13 @@ nodes = get𝑿ᵢ()
 elements = Dict{String,Vector{ApproxOperator.AbstractElement}}()
 elements["Ω"] = getElements(nodes,entities["Ω"])
 elements["Γᵇ"] = getElements(nodes,entities["Γᵇ"])
-elements["Γᵗ"] = getElements(nodes,entities["Γᵗ"])
+# elements["Γᵗ"] = getElements(nodes,entities["Γᵗ"])
 elements["Γˡ"] = getElements(nodes,entities["Γˡ"])
-elements["Γʳ"] = getElements(nodes,entities["Γʳ"])
-elements["∂Ω"] = elements["Γᵇ"]∪elements["Γᵗ"]∪elements["Γˡ"]∪elements["Γʳ"]
+# elements["Γʳ"] = getElements(nodes,entities["Γʳ"])
+# elements["∂Ω"] = elements["Γᵇ"]∪elements["Γᵗ"]∪elements["Γˡ"]∪elements["Γʳ"]
 
-# elements["Γᵉ"] = getElements(nodes,entities["Γᵉ"])
-# elements["∂Ω"] = elements["Γᵇ"]∪elements["Γˡ"]∪elements["Γᵉ"]
+elements["Γᵉ"] = getElements(nodes,entities["Γᵉ"])
+elements["∂Ω"] = elements["Γᵇ"]∪elements["Γˡ"]∪elements["Γᵉ"]
 
 # gmsh.finalize()
 
@@ -37,7 +37,7 @@ z = 0
 ps = Point3f.(x,y,z)
 scatter!(ps, 
     marker=:circle,
-    markersize = 5,
+    markersize = 25,
     color = :black
 )
 
@@ -58,7 +58,7 @@ for elm in elements["∂Ω"]
     lines!(x,y,linewidth = 1.5, color = :black)
 end
 
-save("./png/Circular_"*string(ndiv)*"_msh.png",f)
-# save("./png/MorleysAcuteSkewPlate_"*string(ndiv)*"_msh.png",f)
+# save("./png/Circular_"*string(ndiv)*"_msh.png",f)
+save("./png/MorleysAcuteSkewPlate_"*string(ndiv)*"_msh.png",f)
 # save("./png/SquarePlate_"*string(ndiv)*"_msh.png",f)
 f

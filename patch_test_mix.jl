@@ -4,7 +4,7 @@ import BenchmarkExample: BenchmarkExample
 
 include("import_patch_test.jl")
 
-ndiv = 64
+ndiv = 8
 elements, nodes, nodes_s= import_patch_test_mix("msh/patchtest_"*string(ndiv)*".msh","./msh/patchtest_"*string(ndiv)*".msh");
 # elements, nodes, nodes_s= import_patch_test_mix("msh/patchtest_quad_"*string(ndiv)*".msh","./msh/patchtest_quad_"*string(ndiv)*".msh");
 nᵇ = length(nodes)
@@ -15,16 +15,16 @@ h = 1
 Dᵇ = E*h^3/12/(1-ν^2)
 Dˢ = 5/6*E*h/(2*(1+ν))
 
-w(x,y) = -Dᵇ/Dˢ*8*x-Dᵇ/Dˢ*8*y+x^3+y^3+x^2*y+x*y^2
-w₁(x,y) = -Dᵇ/Dˢ*8+3*x^2+2*x*y+y^2
-w₂(x,y) = -Dᵇ/Dˢ*8+3*y^2+x^2+2*x*y
-w₁₁(x,y) = 6*x+2*y
-w₂₂(x,y) = 2*x+6*y
-θ₁(x,y) = 3*x^2+2*x*y+y^2
-θ₂(x,y) = 3*y^2+x^2+2*x*y
-θ₁₁(x,y) = 6*x+2*y
-θ₁₂(x,y) = 2*x+2*y
-θ₂₂(x,y) = 2*x+6*y
+# w(x,y) = -Dᵇ/Dˢ*8*x-Dᵇ/Dˢ*8*y+x^3+y^3+x^2*y+x*y^2
+# w₁(x,y) = -Dᵇ/Dˢ*8+3*x^2+2*x*y+y^2
+# w₂(x,y) = -Dᵇ/Dˢ*8+3*y^2+x^2+2*x*y
+# w₁₁(x,y) = 6*x+2*y
+# w₂₂(x,y) = 2*x+6*y
+# θ₁(x,y) = 3*x^2+2*x*y+y^2
+# θ₂(x,y) = 3*y^2+x^2+2*x*y
+# θ₁₁(x,y) = 6*x+2*y
+# θ₁₂(x,y) = 2*x+2*y
+# θ₂₂(x,y) = 2*x+6*y
 
 # w(x,y) = x+y+x^2/2+x*y+y^2/2
 # w₁(x,y) = 1+x+y
@@ -36,6 +36,24 @@ w₂₂(x,y) = 2*x+6*y
 # θ₁₁(x,y)  = 1
 # θ₁₂(x,y)  = 1
 # θ₂₂(x,y)  = 1
+n = 1
+w(x,y) = (x+y)^n
+w₁(x,y) = n*(x+y)^abs(n-1)
+w₂(x,y) = n*(x+y)^abs(n-1)
+w₁₁(x,y) = n*(n-1)*(x+y)^abs(n-2)
+w₂₂(x,y) = n*(n-1)*(x+y)^abs(n-2)
+m = 0
+θ₁(x,y) = (x+y)^m
+θ₂(x,y) = (x+y)^m
+θ₁₁(x,y)  = m*(x+y)^abs(m-1)
+θ₁₂(x,y)  = m*(x+y)^abs(m-1)
+θ₂₂(x,y)  = m*(x+y)^abs(m-1)
+θ₁₁₁(x,y) = m*(m-1)*(x+y)^abs(m-2)
+θ₁₁₂(x,y) = m*(m-1)*(x+y)^abs(m-2)
+θ₁₂₂(x,y) = m*(m-1)*(x+y)^abs(m-2)
+θ₁₂₁(x,y) = m*(m-1)*(x+y)^abs(m-2)
+θ₂₂₂(x,y) = m*(m-1)*(x+y)^abs(m-2)
+θ₂₂₁(x,y) = m*(m-1)*(x+y)^abs(m-2)
 
 M₁₁(x,y)= -Dᵇ*(θ₁₁(x,y)+ν*θ₂₂(x,y))
 M₁₂(x,y)= -Dᵇ*(1-ν)*θ₁₂(x,y)
@@ -107,7 +125,7 @@ push!(nodes,:d=>d₁)
 set𝝭!(elements["Ωᵍ"])
 set∇𝝭!(elements["Ωᵍ"])
 prescribe!(elements["Ωᵍ"],:u=>(x,y,z)->w(x,y))
-# prescribe!(elements["Ωᵍ"],:u=>(x,y,z)->θ₁(x,y))
+# prescribe!(elements["Ωᵍ"],:u=>(x,y,z)->θ₂(x,y))
 L₂ = ops[9](elements["Ωᵍ"])
 # a = log10(L₂)
 # index = [8,16,32,64]

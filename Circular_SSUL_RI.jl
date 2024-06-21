@@ -59,11 +59,12 @@ d₃ = d[3:3:3*nᵇ]
 push!(nodes,:d₁=>d₁,:d₂=>d₂,:d₃=>d₃)
 w = ops𝐴(elements["𝐴"])
 e = abs(w[1]-𝑣)
-index = [8,16,32,64,20,40,60]
-XLSX.openxlsx("./xlsx/Circular_SSUL.xlsx", mode="rw") do xf
-    Sheet = xf[1]
-    ind = findfirst(n->n==ndiv,index)+11
-    Sheet["J"*string(ind)] = log10(5/ndiv)
-    Sheet["K"*string(ind)] = w
-    Sheet["L"*string(ind)] = log10(e)
-end
+log10(e)
+# index = [8,16,32,64,20,40,60]
+# XLSX.openxlsx("./xlsx/Circular_SSUL.xlsx", mode="rw") do xf
+#     Sheet = xf[1]
+#     ind = findfirst(n->n==ndiv,index)+11
+#     Sheet["J"*string(ind)] = log10(5/ndiv)
+#     Sheet["K"*string(ind)] = w
+#     Sheet["L"*string(ind)] = log10(e)
+# end

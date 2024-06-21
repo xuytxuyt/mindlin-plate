@@ -3,9 +3,9 @@ using ApproxOperator, JLD, XLSX
 import BenchmarkExample: BenchmarkExample
 
 include("import_Circular.jl")
-ndiv = 6
-# elements, nodes = import_Circular("msh/circular_"*string(ndiv)*".msh");
-elements, nodes = import_Circular("msh/circular_quad_"*string(ndiv)*".msh");
+ndiv = 8
+elements, nodes = import_Circular("msh/circular_"*string(ndiv)*".msh");
+# elements, nodes = import_Circular("msh/circular_quad_"*string(ndiv)*".msh");
 nₚ = length(nodes)
 
 E = BenchmarkExample.Circular.𝐸
@@ -62,7 +62,7 @@ w = ops𝐴(elements["𝐴"])
 # XLSX.openxlsx("./xlsx/Circular_SSUL.xlsx", mode="rw") do xf
 #     Sheet = xf[1]
 #     ind = findfirst(n->n==ndiv,index)+1
-#     Sheet["B"*string(ind)] = log10(5/ndiv)
-#     Sheet["C"*string(ind)] = w
-#     Sheet["D"*string(ind)] = log10(e)
+    # Sheet["B"*string(ind)] = log10(5/ndiv)
+    # Sheet["C"*string(ind)] = w
+    # Sheet["D"*string(ind)] = log10(e)
 # end

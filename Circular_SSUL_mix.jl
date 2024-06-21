@@ -4,8 +4,8 @@ import BenchmarkExample: BenchmarkExample
 
 include("import_Circular.jl")
 
-ndiv = 40
-ndivs = 40
+ndiv  = 8
+ndivs = 8
 elements, nodes, nodes_s= import_Circular_mix("msh/circular_"*string(ndiv)*".msh","msh/circular_"*string(ndivs)*".msh");
 nᵇ = length(nodes)
 nˢ = length(nodes_s)
@@ -61,13 +61,12 @@ d₃ = d[3:3:3*nᵇ]
 
 push!(nodes,:d₁=>d₁,:d₂=>d₂,:d₃=>d₃)
 w = ops𝐴(elements["𝐴"])
-e = abs(w[1]-𝑣)
-# index = [30,32,34,36,38,40,42,44,46,48,50]
+# e = abs(w[1]-𝑣)
+# index = [8,16,32,64]
 # XLSX.openxlsx("./xlsx/Circular_SSUL.xlsx", mode="rw") do xf
-#     Sheet = xf[2]
+#     Sheet = xf[1]
 #     ind = findfirst(n->n==ndivs,index)+1
-#     Sheet["G"*string(ind)] = nᵇ/nˢ        # G L  
-#     Sheet["H"*string(ind)] = w            # H M  
-#     Sheet["I"*string(ind)] = e            # I N  
-#     Sheet["J"*string(ind)] = log10(e)     # J O  
+#     Sheet["F"*string(ind)] = log10(5/ndiv)
+#     Sheet["G"*string(ind)] = w
+#     Sheet["H"*string(ind)] = log10(e)
 # end
