@@ -1,10 +1,11 @@
-using ApproxOperator, JLD, XLSX
+using ApproxOperator, JLD, XLSX, LinearAlgebra
 
 import BenchmarkExample: BenchmarkExample
 
 include("import_SquarePlate.jl")
-ndiv = 40
-elements, nodes = import_SquarePlate("msh/SquarePlate_"*string(ndiv)*".msh");
+ndiv = 1
+# elements, nodes = import_SquarePlate("msh/SquarePlate_"*string(ndiv)*".msh");
+elements, nodes = import_SquarePlate_p("msh/SquarePlate_"*string(ndiv)*".msh");
 nₚ = length(nodes)
 
 E = BenchmarkExample.SquarePlate.𝐸
@@ -35,10 +36,14 @@ ops = [
     Operator{:∫vθ₂dΓ}(:α=>1e13*E),
     Operator{:L₂}(:E=>E,:ν=>ν),
 ]
+n=60
 k = zeros(3*nₚ,3*nₚ)
-kᵇ = zeros(3*nₚ,3*nₚ)
-kˢ = zeros(3*nₚ,3*nₚ)
-f = zeros(3*nₚ)
+# kᵇ = zeros(3*nₚ,3*nₚ)
+kᵇ = zeros(n,n)
+kˢ = zeros(n,n)
+# kˢ = zeros(3*nₚ,3*nₚ)
+# f = zeros(3*nₚ)
+f = zeros(n)
 # ops[1](elements["Ω"],k)
 ops[2](elements["Ω"],kᵇ)
 ops[3](elements["Ω"],kˢ)
@@ -56,17 +61,19 @@ ops[7](elements["Γᵗ"],k,f)
 ops[7](elements["Γˡ"],k,f)
 ops[7](elements["Γʳ"],k,f)
 
-d = (kᵇ+kˢ+k)\f
-d₁ = d[1:3:3*nₚ]
-d₂ = d[2:3:3*nₚ]
-d₃ = d[3:3:3*nₚ]
+rank(kˢ)
 
-push!(nodes,:d=>d₁)
-set𝝭!(elements["Ωᵍ"])
-set∇𝝭!(elements["Ωᵍ"])
-prescribe!(elements["Ωᵍ"],:u=>(x,y,z)->w(x,y))
-L₂ = ops[8](elements["Ωᵍ"])
-a = log10(L₂)
+# d = (kᵇ+kˢ+k)\f
+# d₁ = d[1:3:3*nₚ]
+# d₂ = d[2:3:3*nₚ]
+# d₃ = d[3:3:3*nₚ]
+
+# push!(nodes,:d=>d₁)
+# set𝝭!(elements["Ωᵍ"])
+# set∇𝝭!(elements["Ωᵍ"])
+# prescribe!(elements["Ωᵍ"],:u=>(x,y,z)->w(x,y))
+# L₂ = ops[8](elements["Ωᵍ"])
+# a = log10(L₂)
 # index = [8,16,32,64]
 # XLSX.openxlsx("./xlsx/SquarePlate_UniformLoading.xlsx", mode="rw") do xf
 #     Sheet = xf[2]

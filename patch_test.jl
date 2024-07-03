@@ -1,12 +1,12 @@
-using ApproxOperator, JLD, XLSX
+using ApproxOperator, JLD, XLSX, LinearAlgebra
 
 import BenchmarkExample: BenchmarkExample
 
 include("import_patch_test.jl")
 ndiv = 8
-# elements, nodes = import_patch_test_fem("msh/patchtest_"*string(ndiv)*".msh");
+elements, nodes = import_patch_test_fem("msh/patchtest_"*string(ndiv)*".msh");
 # elements, nodes = import_patch_test_fem("msh/patchtest_quad_"*string(ndiv)*".msh");
-elements, nodes = import_patch_test_fem("msh/square_quad8_8.msh");
+# elements, nodes = import_patch_test_fem("msh/square_quad8_8.msh");
 
 nₚ = length(nodes)
 
@@ -27,11 +27,22 @@ Dˢ = 5/6*E*h/(2*(1+ν))
 # θ₁₂(x,y) = 2*x+2*y
 # θ₂₂(x,y) = 2*x+6*y
 
-w(x,y) = x+y+x^2/2+x*y+y^2/2
-w₁(x,y) = 1+x+y
-w₂(x,y) = 1+x+y
-w₁₁(x,y) = 1
-w₂₂(x,y) = 1
+# w(x,y) = x+y+x^2/2+x*y+y^2/2
+# w₁(x,y) = 1+x+y
+# w₂(x,y) = 1+x+y
+# w₁₁(x,y) = 1
+# w₂₂(x,y) = 1
+# θ₁(x,y) = 1+x+y
+# θ₂(x,y) = 1+x+y
+# θ₁₁(x,y)  = 1
+# θ₁₂(x,y)  = 1
+# θ₂₂(x,y)  = 1
+
+w(x,y) = 1+x+y
+w₁(x,y) = 1
+w₂(x,y) = 1
+w₁₁(x,y) = 0
+w₂₂(x,y) = 0
 θ₁(x,y) = 1+x+y
 θ₂(x,y) = 1+x+y
 θ₁₁(x,y)  = 1
@@ -117,20 +128,21 @@ ops[7](elements["Γ₄"],k,f)
 # ops[9](elements["Γ₂"],f)
 # ops[9](elements["Γ₃"],f)
 # ops[9](elements["Γ₄"],f)
+rank(k)
+# d = (kᵇ+kˢ+k)\f
 
-d = (kᵇ+kˢ+k)\f
-d₁ = d[1:3:3*nₚ]
-d₂ = d[2:3:3*nₚ]
-d₃ = d[3:3:3*nₚ]
+# d₁ = d[1:3:3*nₚ]
+# d₂ = d[2:3:3*nₚ]
+# d₃ = d[3:3:3*nₚ]
 
-push!(nodes,:d=>d₁)
+# push!(nodes,:d=>d₁)
 # push!(nodes,:d=>d₂)
 # push!(nodes,:d=>d₃)
 
-set𝝭!(elements["Ωᵍ"])
-set∇𝝭!(elements["Ωᵍ"])
-prescribe!(elements["Ωᵍ"],:u=>(x,y,z)->w(x,y))
-L₂ = ops[10](elements["Ωᵍ"])
+# set𝝭!(elements["Ωᵍ"])
+# set∇𝝭!(elements["Ωᵍ"])
+# prescribe!(elements["Ωᵍ"],:u=>(x,y,z)->w(x,y))
+# L₂ = ops[10](elements["Ωᵍ"])
 # a = log10(L₂)
 # index = [8,16,32,64]
 # XLSX.openxlsx("./xlsx/patch_test.xlsx", mode="rw") do xf

@@ -2,9 +2,10 @@ using ApproxOperator, JLD, XLSX
 
 import BenchmarkExample: BenchmarkExample
 include("import_SquarePlate.jl")
-ndiv  = 60
-ndivs = 63
+ndiv  = 20
+ndivs = 20
 elements, nodes, nodes_s= import_SquarePlate_mix("msh/SquarePlate_"*string(ndiv)*".msh","msh/SquarePlate_"*string(ndivs)*".msh");
+# elements, nodes, nodes_s= import_SquarePlate_mix("msh/SquarePlate_bubble_"*string(ndiv)*".msh","msh/SquarePlate_bubble_"*string(ndivs)*".msh");
 nᵇ = length(nodes)
 nˢ = length(nodes_s)
 
@@ -35,6 +36,7 @@ ops = [
     Operator{:∫vwdΓ}(:α=>1e13*E),
     Operator{:∫vθ₁dΓ}(:α=>1e13*E),
     Operator{:∫vθ₂dΓ}(:α=>1e13*E),
+    Operator{:L₂_ThickPlate}(:E=>E,:ν=>ν),
     Operator{:L₂}(:E=>E,:ν=>ν),
 ]
 kᵇ = zeros(3*nᵇ,3*nᵇ)
@@ -67,18 +69,20 @@ d₁ = d[1:3:3*nᵇ]
 d₂ = d[2:3:3*nᵇ]
 d₃ = d[3:3:3*nᵇ]
 
-push!(nodes,:d=>d₁)
+push!(nodes,:d₁=>d₁,:d₂=>d₂,:d₃=>d₃)
 set𝝭!(elements["Ωᵍ"])
 set∇𝝭!(elements["Ωᵍ"])
-prescribe!(elements["Ωᵍ"],:u=>(x,y,z)->w(x,y))
+prescribe!(elements["Ωᵍ"],:w=>(x,y,z)->w(x,y))
+prescribe!(elements["Ωᵍ"],:θ₁=>(x,y,z)->θ₁(x,y))
+prescribe!(elements["Ωᵍ"],:θ₂=>(x,y,z)->θ₂(x,y))
 L₂ = ops[8](elements["Ωᵍ"])
 a = log10(L₂)
 # println(wᶜ)
 # e = abs(wᶜ[1]-𝑣)
-index = 50:70
-XLSX.openxlsx("./xlsx/SquarePlate_UniformLoading.xlsx", mode="rw") do xf
-    Sheet = xf[2]
-    ind = findfirst(n->n==ndivs,index)+1
-    Sheet["H"*string(ind)] = nˢ
-    Sheet["I"*string(ind)] = a
-end
+# index = [270,280,290,300,310,320,330,340,350,360,370,380,390,400]
+# XLSX.openxlsx("./xlsx/SquarePlate_UniformLoading.xlsx", mode="rw") do xf
+#     Sheet = xf[4]
+#     ind = findfirst(n->n==ndivs,index)+1
+#     Sheet["H"*string(ind)] = nˢ
+#     Sheet["I"*string(ind)] = a
+# end

@@ -1,5 +1,5 @@
 
-using Tensors, BenchmarkExample
+using Tensors, BenchmarkExample, Statistics, DelimitedFiles
 import Gmsh: gmsh
 function import_SquarePlate(filename::String)
     gmsh.initialize()
@@ -25,6 +25,32 @@ function import_SquarePlate(filename::String)
     # gmsh.finalize()
     return elements, nodes
 end
+function import_SquarePlate_p(filename::String)
+    gmsh.initialize()
+    gmsh.open(filename)
+
+    integrationOrder = 2     # Tri3
+    # integrationOrder = 3     # Quad4 
+    integrationOrder_Ωᵍ = 10
+    entities = getPhysicalGroups()
+    nodes = get𝑿ᵢ()
+    x = nodes.x
+    y = nodes.y
+    z = nodes.z
+    type = PiecewisePolynomial{:Cubic2D}
+    elements = Dict{String,Vector{ApproxOperator.AbstractElement}}()
+    elements["Ω"] = getPiecewiseElements(entities["Ω"],type, integrationOrder)
+    elements["Ωᵍ"] = getElements(nodes, entities["Ω"], integrationOrder_Ωᵍ)
+    elements["Γᵇ"] = getElements(nodes, entities["Γᵇ"], integrationOrder,normal=true)
+    elements["Γᵗ"] = getElements(nodes, entities["Γᵗ"], integrationOrder,normal=true)
+    elements["Γˡ"] = getElements(nodes, entities["Γˡ"], integrationOrder,normal=true)
+    elements["Γʳ"] = getElements(nodes, entities["Γʳ"], integrationOrder,normal=true)
+    # elements["𝐴"] = getElements(nodes, entities["𝐴"], integrationOrder)
+    push!(elements["Ωᵍ"], :𝝭=>:𝑠, :∂𝝭∂x=>:𝑠, :∂𝝭∂y=>:𝑠)
+    # gmsh.finalize()
+    return elements, nodes
+end
+
 function import_SquarePlate_mix(filename1::String,filename2::String)
     gmsh.initialize()
     gmsh.open(filename1)
@@ -50,7 +76,10 @@ function import_SquarePlate_mix(filename1::String,filename2::String)
     xˢ = nodes_s.x
     yˢ = nodes_s.y
     zˢ = nodes_s.z
-    s = 2.5/ndivs*ones(length(nodes_s))
+    # s = 2.5/ndivs*ones(length(nodes_s))
+    Ω = getElements(nodes_s, entities["Ω"])
+    s, var𝐴 = cal_area_support(Ω)
+    s = 2.1*s*ones(length(nodes_s))
     push!(nodes_s,:s₁=>s,:s₂=>s,:s₃=>s)
     type = ReproducingKernel{:Linear2D,:□,:CubicSpline}
     sp = RegularGrid(xˢ,yˢ,zˢ,n = 1,γ = 2)
@@ -139,4 +168,21 @@ prescribeForSSUniformLoading = quote
     prescribe!(elements["Γˡ"],:θ₂=>(x,y,z)->0.0)
     prescribe!(elements["Γʳ"],:θ₂=>(x,y,z)->0.0)
     prescribe!(elements["Ω"],:q=>(x,y,z)->F)
+end
+
+function cal_area_support(elms::Vector{ApproxOperator.AbstractElement})
+    𝐴s = zeros(length(elms))
+    for (i,elm) in enumerate(elms)
+        x₁ = elm.𝓒[1].x
+        y₁ = elm.𝓒[1].y
+        x₂ = elm.𝓒[2].x
+        y₂ = elm.𝓒[2].y
+        x₃ = elm.𝓒[3].x
+        y₃ = elm.𝓒[3].y
+        𝐴s[i] = 0.5*(x₁*y₂ + x₂*y₃ + x₃*y₁ - x₂*y₁ - x₃*y₂ - x₁*y₃)
+    end
+    avg𝐴 = mean(𝐴s)
+    var𝐴 = var(𝐴s)
+    s = (4/3^0.5*avg𝐴)^0.5
+    return s, var𝐴
 end

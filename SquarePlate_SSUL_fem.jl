@@ -15,7 +15,7 @@ F = BenchmarkExample.SquarePlate.𝐹
 
 Dᵇ = E*h^3/12/(1-ν^2)
 eval(prescribeForSSUniformLoading)
-set𝝭!(elements["Ω"])
+set𝝭!(elements["Ω"]) 
 set∇𝝭!(elements["Ω"])
 set𝝭!(elements["Γᵇ"])
 set𝝭!(elements["Γᵗ"])

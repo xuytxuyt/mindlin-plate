@@ -1,7 +1,7 @@
 
 a = 1.0;
 b = 1.0;
-n = 8;
+n = 1;
 
 Point(1) = {0.0, 0.0, 0.0};
 Point(2) = {  a, 0.0, 0.0};
@@ -28,4 +28,4 @@ Physical Surface("Ω") = {1};
 Mesh.Algorithm = 1;
 Mesh.MshFileVersion = 2;
 Mesh 2;
-//RecombineMesh;
+RecombineMesh;
