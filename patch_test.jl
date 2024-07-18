@@ -3,7 +3,7 @@ using ApproxOperator, JLD, XLSX, LinearAlgebra
 import BenchmarkExample: BenchmarkExample
 
 include("import_patch_test.jl")
-ndiv = 8
+ndiv = 16
 elements, nodes = import_patch_test_fem("msh/patchtest_"*string(ndiv)*".msh");
 # elements, nodes = import_patch_test_fem("msh/patchtest_quad_"*string(ndiv)*".msh");
 # elements, nodes = import_patch_test_fem("msh/square_quad8_8.msh");
@@ -128,8 +128,9 @@ ops[7](elements["Γ₄"],k,f)
 # ops[9](elements["Γ₂"],f)
 # ops[9](elements["Γ₃"],f)
 # ops[9](elements["Γ₄"],f)
-rank(k)
+
 # d = (kᵇ+kˢ+k)\f
+a = eigvals(kˢ,kᵇ+k)
 
 # d₁ = d[1:3:3*nₚ]
 # d₂ = d[2:3:3*nₚ]
