@@ -136,6 +136,8 @@ prescribeForSSNonUniformLoading = quote
     prescribe!(elements["Γˡ"],:θ₂=>(x,y,z)->θ₂(x,y))
     prescribe!(elements["Γʳ"],:θ₂=>(x,y,z)->θ₂(x,y))
     prescribe!(elements["Ω"],:q=>(x,y,z)->F(x,y))
+    prescribe!(elements["Ω"],:Q₁=>(x,y,z)->Q₁(x,y))
+    prescribe!(elements["Ω"],:Q₂=>(x,y,z)->Q₂(x,y))
 end
 
 prescribeForSSUniformLoading = quote
@@ -160,6 +162,7 @@ prescribeForSSUniformLoading = quote
     prescribe!(elements["Γˡ"],:θ₂=>(x,y,z)->0.0)
     prescribe!(elements["Γʳ"],:θ₂=>(x,y,z)->0.0)
     prescribe!(elements["Ω"],:q=>(x,y,z)->F)
+
 end
 
 prescribeForSimpleSupported = quote

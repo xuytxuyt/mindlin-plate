@@ -1,9 +1,10 @@
-using ApproxOperator, JLD, XLSX
+using ApproxOperator, JLD, XLSX, Printf
 
 import BenchmarkExample: BenchmarkExample
 include("import_SquarePlate.jl")
-ndiv  = 21
-ndivs = 441
+include("wirteVTK.jl")
+ndiv  = 41
+ndivs = 1681
 # elements, nodes, nodes_s= import_SquarePlate_mix("msh/SquarePlate_"*string(ndiv)*".msh","msh/SquarePlate_"*string(ndivs)*".msh");
 elements, nodes, nodes_s= import_SquarePlate_mix("msh/SquarePlate_"*string(ndiv)*".msh","msh/SquarePlate_bubble_"*string(ndivs)*".msh");
 # elements, nodes, nodes_s= import_SquarePlate_mix("msh/SquarePlate_quad_"*string(ndiv)*".msh","msh/SquarePlate_bubble_"*string(ndivs)*".msh");
@@ -23,12 +24,12 @@ F(x,y) = E*h^3/(12*(1-ν^2))*(12*y*(y-1)*(5*x^2-5*x+1)*(2*y^2*(y-1)^2+x*(x-1)*(5
 
 w₁(x,y) = (x-1)^2*x^2*(2*x-1)*(y-1)^3*y^3-2*h^2/(5*(1-ν))*((20*x^3-30*x^2+12*x-1)*(y-1)^3*y^3+3*(x-1)^2*x^2*(2*x-1)*(y-1)*y*(5*y^2-5*y+1))
 w₂(x,y) = (x-1)^3*x^3*(y-1)^2*y^2*(2*y-1)-2*h^2/(5*(1-ν))*(3*(x-1)*x*(5*x^2-5*x+1)*(y-1)^2*y^2*(2*y-1)+x^3*(x-1)^3*(20*y^3-30*y^2+12*y-1))
-θ₁₁(x,y) = 2*(x-1)*x*(5*x^2-5*x+1)*(y-1)^3*y^3
-θ₁₂(x,y) = 3*(x-1)^2*x^2*(2*x-1)*(y-1)^2*y^2*(2*y-1)
-θ₂₂(x,y) = 2*(x-1)^3*x^3*(y-1)*y*(5*y^2-5*y+1)
-M₁₁(x,y)= -Dᵇ*(θ₁₁(x,y)+ν*θ₂₂(x,y))
-M₁₂(x,y)= -Dᵇ*(1-ν)*θ₁₂(x,y)
-M₂₂(x,y)= -Dᵇ*(ν*θ₁₁(x,y)+θ₂₂(x,y))
+# θ₁₁(x,y) = 2*(x-1)*x*(5*x^2-5*x+1)*(y-1)^3*y^3
+# θ₁₂(x,y) = 3*(x-1)^2*x^2*(2*x-1)*(y-1)^2*y^2*(2*y-1)
+# θ₂₂(x,y) = 2*(x-1)^3*x^3*(y-1)*y*(5*y^2-5*y+1)
+# M₁₁(x,y)= -Dᵇ*(θ₁₁(x,y)+ν*θ₂₂(x,y))
+# M₁₂(x,y)= -Dᵇ*(1-ν)*θ₁₂(x,y)
+# M₂₂(x,y)= -Dᵇ*(ν*θ₁₁(x,y)+θ₂₂(x,y))
 Q₁(x,y) = Dˢ*(w₁(x,y)-θ₁(x,y))
 Q₂(x,y) = Dˢ*(w₂(x,y)-θ₂(x,y))
 eval(prescribeForSSNonUniformLoading)
@@ -88,20 +89,22 @@ ops[7](elements["Γʳ"],kᵇ,f)
 # ops[11](elements["Γᵗ"],f)
 # ops[11](elements["Γʳ"],f)
 
-# k = [kᵇ kʷˢ;kʷˢ' kˢˢ]
-# f = [f;zeros(2*nˢ)]
+k = [kᵇ kʷˢ;kʷˢ' kˢˢ]
+f = [f;zeros(2*nˢ)]
 
 # k = kʷˢ*inv(kˢˢ)*kʷˢ'
-k = -kʷˢ*(kˢˢ\kʷˢ')
-a = eigvals(k,kᵇ)
+# k = -kʷˢ*(kˢˢ\kʷˢ')
+# a = eigvals(k)
+# println(log10(a[3*nᵇ-2nˢ+1]))
 # println(a[3*nᵇ-2nˢ+1])
 
-# d = k\f
-# d₁ = d[1:3:3*nᵇ]
-# d₂ = d[2:3:3*nᵇ] 
-# d₃ = d[3:3:3*nᵇ]
+d = k\f
+d₁ = d[1:3:3*nᵇ]
+d₂ = d[2:3:3*nᵇ] 
+d₃ = d[3:3:3*nᵇ]
 
-# push!(nodes,:d₁=>d₁,:d₂=>d₂,:d₃=>d₃)
+push!(nodes,:d₁=>d₁,:d₂=>d₂,:d₃=>d₃)
+eval(VTK_mix_pressure)
 # set𝝭!(elements["Ωᵍ"])
 # set∇𝝭!(elements["Ωᵍ"])
 # prescribe!(elements["Ωᵍ"],:u=>(x,y,z)->w(x,y))
