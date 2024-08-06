@@ -85,7 +85,7 @@ function import_SquarePlate_mix(filename1::String,filename2::String)
     push!(elements["Ωˢ"], :𝝭=>:𝑠, :∂𝝭∂x=>:𝑠, :∂𝝭∂y=>:𝑠)
     push!(elements["Ωˢ"], :𝗠=>𝗠, :∂𝗠∂x=>∂𝗠∂x, :∂𝗠∂y=>∂𝗠∂y)
     # gmsh.finalize()
-    return elements, nodes, nodes_s
+    return elements, nodes, nodes_s, Ω
 end
 function import_SquarePlate_quad_RI(filename1::String,filename2::String)
     gmsh.initialize()

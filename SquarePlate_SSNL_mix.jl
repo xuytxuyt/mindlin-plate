@@ -3,14 +3,15 @@ using ApproxOperator, JLD, XLSX, Printf
 import BenchmarkExample: BenchmarkExample
 include("import_SquarePlate.jl")
 include("wirteVTK.jl")
-ndiv  = 41
-ndivs = 1681
+ndiv  = 21
+ndivs = 290
 # elements, nodes, nodes_s= import_SquarePlate_mix("msh/SquarePlate_"*string(ndiv)*".msh","msh/SquarePlate_"*string(ndivs)*".msh");
-elements, nodes, nodes_s= import_SquarePlate_mix("msh/SquarePlate_"*string(ndiv)*".msh","msh/SquarePlate_bubble_"*string(ndivs)*".msh");
+elements, nodes, nodes_s, Ω= import_SquarePlate_mix("msh/SquarePlate_"*string(ndiv)*".msh","msh/SquarePlate_bubble_"*string(ndivs)*".msh");
 # elements, nodes, nodes_s= import_SquarePlate_mix("msh/SquarePlate_quad_"*string(ndiv)*".msh","msh/SquarePlate_bubble_"*string(ndivs)*".msh");
 nᵇ = length(nodes)
 nˢ = length(nodes_s)
 nₑ = length(elements["Ω"])
+nₑₛ = length(Ω)
 E = BenchmarkExample.SquarePlate.𝐸
 ν = BenchmarkExample.SquarePlate.𝜈
 h = BenchmarkExample.SquarePlate.ℎ
@@ -105,6 +106,26 @@ d₃ = d[3:3:3*nᵇ]
 
 push!(nodes,:d₁=>d₁,:d₂=>d₂,:d₃=>d₃)
 eval(VTK_mix_pressure)
+
+
+# exact solution #
+# q₁ = zeros(nˢ)
+# q₂ = zeros(nˢ)
+# i = 0.0
+# for s in nodes_s
+#     i = s.𝐼
+#     ξ¹ = s.x
+#     ξ² = s.y
+#     θ₁ = ξ²^3*(ξ²-1)^3*ξ¹^2*(ξ¹-1)^2*(2*ξ¹-1)
+#     θ₂ = ξ¹^3*(ξ¹-1)^3*ξ²^2*(ξ²-1)^2*(2*ξ²-1)
+#     w₁ = (ξ¹-1)^2*ξ¹^2*(2*ξ¹-1)*(ξ²-1)^3*ξ²^3-2*h^2/(5*(1-ν))*((20*ξ¹^3-30*ξ¹^2+12*ξ¹-1)*(ξ²-1)^3*ξ²^3+3*(ξ¹-1)^2*ξ¹^2*(2*ξ¹-1)*(ξ²-1)*ξ²*(5*ξ²^2-5*ξ²+1))
+#     w₂ = (ξ¹-1)^3*ξ¹^3*(ξ²-1)^2*ξ²^2*(2*ξ²-1)-2*h^2/(5*(1-ν))*(3*(ξ¹-1)*ξ¹*(5*ξ¹^2-5*ξ¹+1)*(ξ²-1)^2*ξ²^2*(2*ξ²-1)+ξ¹^3*(ξ¹-1)^3*(20*ξ²^3-30*ξ²^2+12*ξ²-1))
+#     q₁[i] = Dˢ*(w₁-θ₁)
+#     q₂[i] = Dˢ*(w₂-θ₂)
+# end
+# push!(nodes_s,:q₁=>q₁,:q₂=>q₂)
+# eval(VTK_mix_pressure_E)
+
 # set𝝭!(elements["Ωᵍ"])
 # set∇𝝭!(elements["Ωᵍ"])
 # prescribe!(elements["Ωᵍ"],:u=>(x,y,z)->w(x,y))
