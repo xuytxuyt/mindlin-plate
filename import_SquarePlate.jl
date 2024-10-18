@@ -25,6 +25,7 @@ function import_SquarePlate(filename::String)
     # gmsh.finalize()
     return elements, nodes
 end
+
 function import_SquarePlate_p(filename::String)
     gmsh.initialize()
     gmsh.open(filename)
@@ -68,15 +69,18 @@ function import_SquarePlate_mix(filename1::String,filename2::String)
     xˢ = nodes_s.x
     yˢ = nodes_s.y
     zˢ = nodes_s.z
-    # s = 2.5/ndivs*ones(length(nodes_s))
+    # s = 1.5/ndivs*ones(length(nodes_s))
+    s₁ = 1.5/ndivs*ones(length(nodes_s))
+    s₂ = 1.5/ndivs2*ones(length(nodes_s))
     Ω = getElements(nodes_s, entities["Ω"])
-    s, var𝐴 = cal_area_support(Ω)
-    s = 2.5*s*ones(length(nodes_s))
-    push!(nodes_s,:s₁=>s,:s₂=>s,:s₃=>s)
+    # s, var𝐴 = cal_area_support(Ω)
+    # push!(nodes_s,:s₁=>s,:s₂=>s,:s₃=>s)
+    push!(nodes_s,:s₁=>s₁,:s₂=>s₂,:s₃=>s₁)
     type = ReproducingKernel{:Linear2D,:□,:CubicSpline}
     sp = RegularGrid(xˢ,yˢ,zˢ,n = 1,γ = 2)
 
     gmsh.open(filename1)
+    elements["Ωᵍˢ"] = getElements(nodes_s, entities["Ω"],type, integrationOrder_Ωᵍ, sp)
     elements["Ωˢ"] = getElements(nodes_s, entities["Ω"], type, integrationOrder, sp)
     nₘ=21
     𝗠 = (0,zeros(nₘ))
@@ -84,9 +88,12 @@ function import_SquarePlate_mix(filename1::String,filename2::String)
     ∂𝗠∂y = (0,zeros(nₘ))
     push!(elements["Ωˢ"], :𝝭=>:𝑠, :∂𝝭∂x=>:𝑠, :∂𝝭∂y=>:𝑠)
     push!(elements["Ωˢ"], :𝗠=>𝗠, :∂𝗠∂x=>∂𝗠∂x, :∂𝗠∂y=>∂𝗠∂y)
+    push!(elements["Ωᵍˢ"], :𝝭=>:𝑠, :∂𝝭∂x=>:𝑠, :∂𝝭∂y=>:𝑠)
+    push!(elements["Ωᵍˢ"], :𝗠=>𝗠, :∂𝗠∂x=>∂𝗠∂x, :∂𝗠∂y=>∂𝗠∂y)
     # gmsh.finalize()
     return elements, nodes, nodes_s, Ω
 end
+
 function import_SquarePlate_quad_RI(filename1::String,filename2::String)
     gmsh.initialize()
     gmsh.open(filename1)
@@ -115,6 +122,7 @@ function import_SquarePlate_quad_RI(filename1::String,filename2::String)
     # gmsh.finalize()
     return elements, nodes, nodes_s
 end
+
 prescribeForSSNonUniformLoading = quote
     push!(elements["Ω"], :𝝭=>:𝑠, :∂𝝭∂x=>:𝑠, :∂𝝭∂y=>:𝑠)
     push!(elements["Ωᵍ"], :𝝭=>:𝑠, :∂𝝭∂x=>:𝑠, :∂𝝭∂y=>:𝑠)
@@ -136,8 +144,8 @@ prescribeForSSNonUniformLoading = quote
     prescribe!(elements["Γˡ"],:θ₂=>(x,y,z)->θ₂(x,y))
     prescribe!(elements["Γʳ"],:θ₂=>(x,y,z)->θ₂(x,y))
     prescribe!(elements["Ω"],:q=>(x,y,z)->F(x,y))
-    prescribe!(elements["Ω"],:Q₁=>(x,y,z)->Q₁(x,y))
-    prescribe!(elements["Ω"],:Q₂=>(x,y,z)->Q₂(x,y))
+    # prescribe!(elements["Ω"],:Q₁=>(x,y,z)->Q₁(x,y))
+    # prescribe!(elements["Ω"],:Q₂=>(x,y,z)->Q₂(x,y))
 end
 
 prescribeForSSUniformLoading = quote

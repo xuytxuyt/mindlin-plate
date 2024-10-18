@@ -1,10 +1,10 @@
 using ApproxOperator, JLD, XLSX
-
 import BenchmarkExample: BenchmarkExample
 
 include("import_MorleysAcuteSkewPlate.jl")
-ndiv = 64
-elements, nodes, nodes_s= import_MorleysAcuteSkewPlate_mix("msh/MorleysAcuteSkewPlate_"*string(ndiv)*".msh","msh/MorleysAcuteSkewPlate_"*string(ndiv)*".msh");
+ndiv = 32
+ndivs = 56
+elements, nodes, nodes_s= import_MorleysAcuteSkewPlate_mix("msh/MorleysAcuteSkewPlate_"*string(ndiv)*".msh","msh/MorleysAcuteSkewPlate_"*string(ndivs)*".msh");
 nᵇ = length(nodes)
 nˢ = length(nodes_s)
 
@@ -50,8 +50,8 @@ ops[3](elements["Ωˢ"],kˢˢ)
 ops[4](elements["Ω"],f)
 ops[5](elements["Γᵇ"],kᵇ,f)
 ops[5](elements["Γᵗ"],kᵇ,f)
-ops[5](elements["Γˡ"],kᵇ,f)
-ops[5](elements["Γʳ"],kᵇ,f)
+ops[6](elements["Γᵇ"],kᵇ,f)
+ops[6](elements["Γᵗ"],kᵇ,f)
 
 
 ops𝐴 = Operator{:SphericalShell_𝐴}()
@@ -65,14 +65,22 @@ d₃ = d[3:3:3*nᵇ]
 
 push!(nodes,:d₁=>d₁,:d₂=>d₂,:d₃=>d₃)
 w = ops𝐴(elements["𝐴"])
-wᶜ= w*10^3*Dᵇ/(F*L^4)
-# println(wᶜ)
-e = abs(wᶜ[1]-𝑣)
-index = [8,16,32,64]
-XLSX.openxlsx("./xlsx/MorleysAcuteSkewPlate.xlsx", mode="rw") do xf
-    Sheet = xf[1]
-    ind = findfirst(n->n==ndiv,index)+1
-    Sheet["F"*string(ind)] = log10(100/ndiv)
-    Sheet["G"*string(ind)] = wᶜ
-    Sheet["H"*string(ind)] = log10(e)
+wᶜ= w*10^2*Dᵇ/(F*L^4)
+
+println(wᶜ)
+index = 20:64
+XLSX.openxlsx("./xlsx/SquarePlate.xlsx", mode="rw") do xf
+    Sheet = xf[2]
+    ind = findfirst(n->n==ndivs,index)+1
+    Sheet["A"*string(ind)] = nˢ
+    Sheet["B"*string(ind)] = log10(abs(1-abs(wᶜ[1]/𝑣)))
 end
+
+# println(wᶜ)
+# index = [2,4,6,8,16,24,32,48,64]
+# XLSX.openxlsx("./xlsx/SquarePlate.xlsx", mode="rw") do xf
+#     Sheet = xf[3]
+#     ind = findfirst(n->n==ndiv,index)+1
+#     Sheet["A"*string(ind)] = ndiv
+#     Sheet["B"*string(ind)] = abs(wᶜ[1]/𝑣)
+# end

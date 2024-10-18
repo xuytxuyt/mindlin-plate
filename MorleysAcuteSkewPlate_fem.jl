@@ -1,9 +1,9 @@
-using ApproxOperator, JLD, XLSX
+using ApproxOperator, JLD, XLSX, LinearAlgebra
 
 import BenchmarkExample: BenchmarkExample
 
 include("import_MorleysAcuteSkewPlate.jl")
-ndiv = 64
+ndiv = 2
 elements, nodes = import_MorleysAcuteSkewPlate("msh/MorleysAcuteSkewPlate_"*string(ndiv)*".msh");
 nₚ = length(nodes)
 
@@ -45,9 +45,9 @@ ops[2](elements["Ω"],kᵇ)
 ops[3](elements["Ω"],kˢ)
 ops[4](elements["Ω"],f)
 ops[5](elements["Γᵇ"],k,f)
-ops[5](elements["Γˡ"],k,f)
-ops[5](elements["Γʳ"],k,f)
 ops[5](elements["Γᵗ"],k,f)
+ops[6](elements["Γᵇ"],k,f)
+ops[6](elements["Γᵗ"],k,f)
 
 ops𝐴 = Operator{:SphericalShell_𝐴}()
 
@@ -58,14 +58,13 @@ d₃ = d[3:3:3*nₚ]
 
 push!(nodes,:d₁=>d₁,:d₂=>d₂,:d₃=>d₃)
 w = ops𝐴(elements["𝐴"])
-wᶜ= w*10^3*Dᵇ/(F*L^4)
-e = abs(wᶜ[1]-𝑣)
+wᶜ= w*10^2*Dᵇ/(F*L^4)
+
 # println(wᶜ)
-index = [8,16,32,64]
-XLSX.openxlsx("./xlsx/MorleysAcuteSkewPlate.xlsx", mode="rw") do xf
-    Sheet = xf[1]
+index = [2,4,6,8,16,24,32,48,64]
+XLSX.openxlsx("./xlsx/SquarePlate.xlsx", mode="rw") do xf
+    Sheet = xf[3]
     ind = findfirst(n->n==ndiv,index)+1
-    Sheet["B"*string(ind)] = log10(100/ndiv)
-    Sheet["C"*string(ind)] = wᶜ
-    Sheet["D"*string(ind)] = log10(e)
+    Sheet["A"*string(ind)] = ndiv
+    Sheet["B"*string(ind)] = abs(wᶜ[1]/𝑣)
 end

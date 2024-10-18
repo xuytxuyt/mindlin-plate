@@ -129,22 +129,22 @@ ops[7](elements["Γ₄"],k,f)
 # ops[9](elements["Γ₃"],f)
 # ops[9](elements["Γ₄"],f)
 
-# d = (kᵇ+kˢ+k)\f
-a = eigvals(kˢ,kᵇ+k)
+d = (kᵇ+kˢ+k)\f
+# a = eigvals(kˢ,kᵇ+k)
 
-# d₁ = d[1:3:3*nₚ]
-# d₂ = d[2:3:3*nₚ]
-# d₃ = d[3:3:3*nₚ]
+d₁ = d[1:3:3*nₚ]
+d₂ = d[2:3:3*nₚ]
+d₃ = d[3:3:3*nₚ]
 
-# push!(nodes,:d=>d₁)
+push!(nodes,:d=>d₁)
 # push!(nodes,:d=>d₂)
 # push!(nodes,:d=>d₃)
 
-# set𝝭!(elements["Ωᵍ"])
-# set∇𝝭!(elements["Ωᵍ"])
-# prescribe!(elements["Ωᵍ"],:u=>(x,y,z)->w(x,y))
-# L₂ = ops[10](elements["Ωᵍ"])
-# a = log10(L₂)
+set𝝭!(elements["Ωᵍ"])
+set∇𝝭!(elements["Ωᵍ"])
+prescribe!(elements["Ωᵍ"],:u=>(x,y,z)->w(x,y))
+L₂ = ops[10](elements["Ωᵍ"])
+a = log10(L₂)
 # index = [8,16,32,64]
 # XLSX.openxlsx("./xlsx/patch_test.xlsx", mode="rw") do xf
 #     Sheet = xf[5]

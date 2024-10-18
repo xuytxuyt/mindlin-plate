@@ -3,9 +3,9 @@ using ApproxOperator, GLMakie
 
 import Gmsh: gmsh
 
-ndiv = 8
+ndiv = 4
 gmsh.initialize()
-gmsh.open("./msh/Circular_"*string(ndiv)*".msh")
+gmsh.open("./msh/plate_with_hole_tri3_"*string(ndiv)*".msh")
 # gmsh.open("./msh/MorleysAcuteSkewPlate_"*string(ndiv)*".msh")
 # gmsh.open("./msh/SquarePlate_"*string(ndiv)*".msh")
 entities = getPhysicalGroups()
@@ -13,14 +13,13 @@ nodes = get𝑿ᵢ()
 
 elements = Dict{String,Vector{ApproxOperator.AbstractElement}}()
 elements["Ω"] = getElements(nodes,entities["Ω"])
-elements["Γᵇ"] = getElements(nodes,entities["Γᵇ"])
-# elements["Γᵗ"] = getElements(nodes,entities["Γᵗ"])
-elements["Γˡ"] = getElements(nodes,entities["Γˡ"])
+elements["Γᵗ"] = getElements(nodes,entities["Γᵗ"])
+elements["Γᵍ"] = getElements(nodes,entities["Γᵍ"])
 # elements["Γʳ"] = getElements(nodes,entities["Γʳ"])
 # elements["∂Ω"] = elements["Γᵇ"]∪elements["Γᵗ"]∪elements["Γˡ"]∪elements["Γʳ"]
 
-elements["Γᵉ"] = getElements(nodes,entities["Γᵉ"])
-elements["∂Ω"] = elements["Γᵇ"]∪elements["Γˡ"]∪elements["Γᵉ"]
+# elements["Γᵉ"] = getElements(nodes,entities["Γᵉ"])
+elements["∂Ω"] = elements["Γᵍ"]∪elements["Γᵗ"]
 
 # gmsh.finalize()
 
@@ -37,7 +36,7 @@ z = 0
 ps = Point3f.(x,y,z)
 scatter!(ps, 
     marker=:circle,
-    markersize = 25,
+    markersize = 15,
     color = :black
 )
 
@@ -59,6 +58,6 @@ for elm in elements["∂Ω"]
 end
 
 # save("./png/Circular_"*string(ndiv)*"_msh.png",f)
-save("./png/MorleysAcuteSkewPlate_"*string(ndiv)*"_msh.png",f)
+save("./png/plate_with_hole_tri3_"*string(ndiv)*"_msh.png",f)
 # save("./png/SquarePlate_"*string(ndiv)*"_msh.png",f)
 f

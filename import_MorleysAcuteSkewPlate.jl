@@ -49,11 +49,28 @@ function import_MorleysAcuteSkewPlate_mix(filename1::String,filename2::String)
     gmsh.open(filename2)
     entities = getPhysicalGroups()
     nodes_s = get𝑿ᵢ()
-    elements["Ωˢ"] = getElements(nodes_s, entities["Ω"], integrationOrder)
+    xˢ = nodes_s.x
+    yˢ = nodes_s.y
+    zˢ = nodes_s.z
+    s = 1.5*100/ndivs*ones(length(nodes_s))
+    Ω = getElements(nodes_s, entities["Ω"])
+    push!(nodes_s,:s₁=>s,:s₂=>s,:s₃=>s)
+    type = ReproducingKernel{:Linear2D,:□,:CubicSpline}
+    sp = RegularGrid(xˢ,yˢ,zˢ,n = 1,γ = 2)
+
+    gmsh.open(filename1)
+    elements["Ωᵍˢ"] = getElements(nodes_s, entities["Ω"],type, integrationOrder_Ωᵍ, sp)
+    elements["Ωˢ"] = getElements(nodes_s, entities["Ω"], type, integrationOrder, sp)
+    nₘ=21
+    𝗠 = (0,zeros(nₘ))
+    ∂𝗠∂x = (0,zeros(nₘ))
+    ∂𝗠∂y = (0,zeros(nₘ))
     push!(elements["Ωˢ"], :𝝭=>:𝑠, :∂𝝭∂x=>:𝑠, :∂𝝭∂y=>:𝑠)
-    push!(elements["Ωᵍ"], :𝝭=>:𝑠, :∂𝝭∂x=>:𝑠, :∂𝝭∂y=>:𝑠)
+    push!(elements["Ωˢ"], :𝗠=>𝗠, :∂𝗠∂x=>∂𝗠∂x, :∂𝗠∂y=>∂𝗠∂y)
+    push!(elements["Ωᵍˢ"], :𝝭=>:𝑠, :∂𝝭∂x=>:𝑠, :∂𝝭∂y=>:𝑠)
+    push!(elements["Ωᵍˢ"], :𝗠=>𝗠, :∂𝗠∂x=>∂𝗠∂x, :∂𝗠∂y=>∂𝗠∂y)
     # gmsh.finalize()
-    return elements, nodes, nodes_s
+    return elements, nodes, nodes_s, Ω
 end
 
 prescribeForSSUniformLoading = quote
