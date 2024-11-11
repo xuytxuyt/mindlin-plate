@@ -1,15 +1,17 @@
 using ApproxOperator, JLD, XLSX, Printf
-
+using CairoMakie
+using SparseArrays, Pardiso
 import BenchmarkExample: BenchmarkExample
 include("import_SquarePlate.jl")
 include("wirteVTK.jl")
-ndiv  = 8
-ndivs = 8
-ndivs2 = 6
-# elements, nodes, nodes_s, Ω = import_SquarePlate_mix("msh/SquarePlate_"*string(ndiv)*".msh","msh/SquarePlate_"*string(ndivs)*".msh");
-elements, nodes, nodes_s, Ω = import_SquarePlate_mix("msh/SquarePlate_"*string(ndiv)*".msh","msh/SquarePlate_"*string(ndivs,ndivs2)*".msh");
-# elements, nodes, nodes_s, Ω = import_SquarePlate_mix("msh/SquarePlate_"*string(ndiv)*".msh","msh/SquarePlate_bubble_"*string(ndivs)*".msh");
-# elements, nodes, nodes_s = import_SquarePlate_mix("msh/SquarePlate_quad_"*string(ndiv)*".msh","msh/SquarePlate_bubble_"*string(ndivs)*".msh");
+ndiv  = 16
+ndivs = 13
+ndivs2 = 13
+elements, nodes, nodes_s, Ω, sp, type = import_SquarePlate_mix("msh/SquarePlate/SquarePlate_"*string(ndiv)*".msh","msh/SquarePlate/SquarePlate_"*string(ndivs)*".msh");
+# elements, nodes, nodes_s, Ω, sp, type = import_SquarePlate_mix("msh/SquarePlate/SquarePlate_"*string(ndiv)*".msh","msh/SquarePlate/SquarePlate_"*string(ndivs)*"_"*string(ndivs2)*".msh");
+# elements, nodes, nodes_s, Ω , sp, type= import_SquarePlate_mix("msh/SquarePlate/SquarePlate_quad_"*string(ndiv)*".msh","msh/SquarePlate/SquarePlate_quad_"*string(ndivs)*".msh");
+# elements, nodes, nodes_s, Ω = import_SquarePlate_mix("msh/SquarePlate/SquarePlate_quad_"*string(ndiv)*".msh","msh/SquarePlate/SquarePlate_quad_"*string(ndivs)*"_"*string(ndivs2)*".msh");
+
 nᵇ = length(nodes)
 nˢ = length(nodes_s)
 nₑ = length(elements["Ω"])
@@ -18,6 +20,8 @@ E = BenchmarkExample.SquarePlate.𝐸
 ν = BenchmarkExample.SquarePlate.𝜈
 h = BenchmarkExample.SquarePlate.ℎ
 L = BenchmarkExample.SquarePlate.𝐿
+# ps = MKLPardisoSolver()
+
 Dᵇ = E*h^3/12/(1-ν^2)
 Dˢ = 5/6*E*h/(2*(1+ν))
 w(x,y) = 1/3*x^3*(x-1)^3*y^3*(y-1)^3-2*h^2/(5*(1-ν))*(y^3*(y-1)^3*x*(x-1)*(5*x^2-5*x+1)+x^3*(x-1)^3*y*(y-1)*(5*y^2-5*y+1))
@@ -65,6 +69,7 @@ kᵇ = zeros(3*nᵇ,3*nᵇ)
 kʷˢ = zeros(3*nᵇ,2*nˢ)
 kˢˢ = zeros(2*nˢ,2*nˢ)
 f = zeros(3*nᵇ)
+# d = zeros(3*nᵇ+2*nˢ)
 
 ops[1](elements["Ω"],kᵇ)
 ops[2](elements["Ω"],elements["Ωˢ"],kʷˢ)
@@ -94,6 +99,7 @@ ops[7](elements["Γʳ"],kᵇ,f)
 # ops[11](elements["Γʳ"],f)
 
 k = [kᵇ kʷˢ;kʷˢ' kˢˢ]
+# k = sparse([kᵇ kʷˢ;kʷˢ' kˢˢ])
 f = [f;zeros(2*nˢ)]
 
 # k = kʷˢ*inv(kˢˢ)*kʷˢ'
@@ -103,6 +109,7 @@ f = [f;zeros(2*nˢ)]
 # println(a[3*nᵇ-2nˢ+1])
 
 d = k\f
+# pardiso(ps,d,k,f)
 d₁ = d[1:3:3*nᵇ]
 d₂ = d[2:3:3*nᵇ] 
 d₃ = d[3:3:3*nᵇ]
@@ -111,25 +118,6 @@ s₂ = d[3*nᵇ+2:2:3*nᵇ+2*nˢ]
 
 push!(nodes,:d₁=>d₁,:d₂=>d₂,:d₃=>d₃)
 push!(nodes_s,:q₁=>s₁,:q₂=>s₂)
-# eval(VTK_mix_pressure)
-
-
-# exact solution #
-# q₁ = zeros(nˢ)
-# q₂ = zeros(nˢ)
-# i = 0.0
-# for s in nodes_s
-#     i = s.𝐼
-#     ξ¹ = s.x
-#     ξ² = s.y
-#     θ₁ = ξ²^3*(ξ²-1)^3*ξ¹^2*(ξ¹-1)^2*(2*ξ¹-1)
-#     θ₂ = ξ¹^3*(ξ¹-1)^3*ξ²^2*(ξ²-1)^2*(2*ξ²-1)
-#     w₁ = (ξ¹-1)^2*ξ¹^2*(2*ξ¹-1)*(ξ²-1)^3*ξ²^3-2*h^2/(5*(1-ν))*((20*ξ¹^3-30*ξ¹^2+12*ξ¹-1)*(ξ²-1)^3*ξ²^3+3*(ξ¹-1)^2*ξ¹^2*(2*ξ¹-1)*(ξ²-1)*ξ²*(5*ξ²^2-5*ξ²+1))
-#     w₂ = (ξ¹-1)^3*ξ¹^3*(ξ²-1)^2*ξ²^2*(2*ξ²-1)-2*h^2/(5*(1-ν))*(3*(ξ¹-1)*ξ¹*(5*ξ¹^2-5*ξ¹+1)*(ξ²-1)^2*ξ²^2*(2*ξ²-1)+ξ¹^3*(ξ¹-1)^3*(20*ξ²^3-30*ξ²^2+12*ξ²-1))
-#     q₁[i] = Dˢ*(w₁-θ₁)
-#     q₂[i] = Dˢ*(w₂-θ₂)
-# end
-# push!(nodes_s,:q₁=>q₁,:q₂=>q₂)
 # eval(VTK_mix_pressure)
 
 set𝝭!(elements["Ωᵍ"])
@@ -149,14 +137,14 @@ b = log10(L₂_q)
 println(a)
 println(b)
 
-index = 2:55
-XLSX.openxlsx("./xlsx/SquarePlate.xlsx", mode="rw") do xf
-    Sheet = xf[2]
-    ind = findfirst(n->n==ndivs2,index)+1
-    Sheet["A"*string(ind)] = nˢ
-    Sheet["B"*string(ind)] = a
-    Sheet["C"*string(ind)] = b
-end
+# index = 40:90
+# XLSX.openxlsx("./xlsx/SquarePlate.xlsx", mode="rw") do xf
+#     Sheet = xf[1]
+#     ind = findfirst(n->n==ndivs,index)+1
+#     Sheet["A"*string(ind)] = nˢ
+#     Sheet["B"*string(ind)] = a
+#     Sheet["C"*string(ind)] = b
+# end
 
 # println(wᶜ)
 # e = abs(wᶜ[1]-𝑣)
@@ -168,3 +156,45 @@ end
 #     Sheet["B"*string(ind)] = log10(1/ndiv)
 #     Sheet["C"*string(ind)] = a
 # end
+
+fig = Figure()
+ind = 100
+ax = Axis(fig[1,1], 
+    aspect = DataAspect(), 
+    xticksvisible = false,
+    xticklabelsvisible=false, 
+    yticksvisible = false, 
+    yticklabelsvisible=false,
+)
+hidespines!(ax)
+hidedecorations!(ax)
+xs = LinRange(0, 1, ind)
+ys = LinRange(0, 1, ind)
+zs = zeros(ind,ind)
+𝗠 = zeros(21)
+for (i,x) in enumerate(xs)
+    for (j,y) in enumerate(ys)
+        indices = sp(x,y,0.0)
+        ni = length(indices)
+        𝓒 = [nodes_s[i] for i in indices]
+        data = Dict([:x=>(2,[x]),:y=>(2,[y]),:z=>(2,[0.0]),:𝝭=>(4,zeros(ni)),:𝗠=>(0,𝗠)])
+        ξ = 𝑿ₛ((𝑔=1,𝐺=1,𝐶=1,𝑠=0), data)
+        𝓖 = [ξ]
+        a = type(𝓒,𝓖)
+        set𝝭!(a)
+        q = 0.0
+        N = ξ[:𝝭]
+        for (k,xₖ) in enumerate(𝓒)
+            # q += N[k]*xₖ.q₁
+            q += N[k]*xₖ.q₂
+        end
+        zs[i,j] = q
+    end
+end
+surface!(xs,ys,zeros(ind,ind),color=zs,colorrange=(-0.000025,0.000025),colormap=:lightrainbow)
+contour!(xs,ys,zs,levels=-0.000025:0.00000715:0.000025,color=:azure)
+# Colorbar(fig[1,2], limits=(-900,900), colormap=:lightrainbow)
+# save("./png/SquarePlate_mix_tri3_q1_"*string(ndiv)*"_"*string(ndivs)*".png",fig, px_per_unit = 10.0)
+save("./png/SquarePlate_mix_tri3_q2_"*string(ndiv)*"_"*string(ndivs)*".png",fig, px_per_unit = 10.0)
+
+fig

@@ -3,8 +3,9 @@ using ApproxOperator, JLD, XLSX, LinearAlgebra
 import BenchmarkExample: BenchmarkExample
 
 include("import_SquarePlate.jl")
-ndiv = 64
-elements, nodes = import_SquarePlate("msh/SquarePlate_"*string(ndiv)*".msh");
+ndiv = 8
+# elements, nodes = import_SquarePlate("msh/SquarePlate_"*string(ndiv)*".msh");
+elements, nodes = import_SquarePlate("msh/SquarePlate/SquarePlate_quad_"*string(ndiv)*".msh");
 # elements, nodes = import_SquarePlate_p("msh/SquarePlate_"*string(ndiv)*".msh");
 nₚ = length(nodes)
 
@@ -78,3 +79,4 @@ a = log10(L₂)
 #     Sheet["B"*string(ind)] = log10(1/ndiv)
 #     Sheet["C"*string(ind)] = a
 # end
+

@@ -5,8 +5,8 @@ function import_SquarePlate(filename::String)
     gmsh.initialize()
     gmsh.open(filename)
 
-    integrationOrder = 2     # Tri3
-    # integrationOrder = 3     # Quad4 
+    # integrationOrder = 2     # Tri3
+    integrationOrder = 3     # Quad4 
     integrationOrder_Ωᵍ = 10
     entities = getPhysicalGroups()
     nodes = get𝑿ᵢ()
@@ -91,7 +91,7 @@ function import_SquarePlate_mix(filename1::String,filename2::String)
     push!(elements["Ωᵍˢ"], :𝝭=>:𝑠, :∂𝝭∂x=>:𝑠, :∂𝝭∂y=>:𝑠)
     push!(elements["Ωᵍˢ"], :𝗠=>𝗠, :∂𝗠∂x=>∂𝗠∂x, :∂𝗠∂y=>∂𝗠∂y)
     # gmsh.finalize()
-    return elements, nodes, nodes_s, Ω
+    return elements, nodes, nodes_s, Ω, sp, type
 end
 
 function import_SquarePlate_quad_RI(filename1::String,filename2::String)
