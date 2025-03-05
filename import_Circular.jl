@@ -27,8 +27,10 @@ end
 function import_Circular_mix(filename1::String,filename2::String)
     gmsh.initialize()
     gmsh.open(filename1)
-    integrationOrder = 2      # Tri3
+    # integrationOrder = 2      # Tri3
     # integrationOrder = 3      # Quad4
+    integrationOrder = 4        # Tri6  Quad8
+
     integrationOrder_Ωᵍ = 10
     entities = getPhysicalGroups()
     nodes = get𝑿ᵢ()
@@ -47,10 +49,13 @@ function import_Circular_mix(filename1::String,filename2::String)
     xˢ = nodes_s.x
     yˢ = nodes_s.y
     zˢ = nodes_s.z
-    s = 2.5*5/ndivs*ones(length(nodes_s))
+    s = 2.5*5/(2*ndivs)*ones(length(nodes_s))
+    Ω = getElements(nodes_s, entities["Ω"])
     push!(nodes_s,:s₁=>s,:s₂=>s,:s₃=>s)
-    type = ReproducingKernel{:Linear2D,:□,:CubicSpline}
-    sp = RegularGrid(xˢ,yˢ,zˢ,n = 1,γ = 2)
+    # type = ReproducingKernel{:Linear2D,:□,:CubicSpline}
+    # sp = RegularGrid(xˢ,yˢ,zˢ,n = 1,γ = 2)
+    type = ReproducingKernel{:Quadratic2D,:□,:CubicSpline}
+    sp = RegularGrid(xˢ,yˢ,zˢ,n = 3,γ = 5)
 
     gmsh.open(filename1)
     elements["Ωˢ"] = getElements(nodes_s, entities["Ω"], type, integrationOrder, sp)
@@ -62,7 +67,7 @@ function import_Circular_mix(filename1::String,filename2::String)
     push!(elements["Ωˢ"], :𝗠=>𝗠, :∂𝗠∂x=>∂𝗠∂x, :∂𝗠∂y=>∂𝗠∂y)
 
     # gmsh.finalize()
-    return elements, nodes, nodes_s
+    return elements, nodes, nodes_s, Ω, sp, type
 end
 
 function import_Circular_quad_RI(filename1::String,filename2::String)

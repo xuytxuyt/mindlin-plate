@@ -28,9 +28,9 @@ xs = LinRange(0, 1, ind)
 ys = LinRange(0, 1, ind)
 # zs = [Q₁(x,y) for x in xs, y in ys]
 zs = [Q₂(x,y) for x in xs, y in ys]
-surface!(xs,ys,zeros(ind,ind),color=zs,colorrange=(-0.000025,0.000025),colormap=:lightrainbow)
+surface!(xs,ys,zeros(ind,ind),color=zs,colorrange=(-0.000025,0.000025),colormap=:summer)
 contour!(xs[1:end-1],ys,zs[1:end-1,:],levels=-0.000025:0.00000715:0.000025,color=:azure)
-Colorbar(fig[1,2], limits=(-0.000025,0.000025), colormap=:lightrainbow)
+Colorbar(fig[1,2], limits=(-0.000025,0.000025), colormap=:summer, size=30.0, ticklabelsize=20.0)
 save("./png/plate_exactQ₂_solution.png",fig, px_per_unit = 10.0)
 # save("./png/plate_exactQ₁_solution.png",fig, px_per_unit = 10.0)
 fig

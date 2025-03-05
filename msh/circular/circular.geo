@@ -1,6 +1,6 @@
 
 a = 5.0;
-n = 8;
+n = 7;
 
 Point(1) = {0.0, 0.0, 0.0};
 Point(2) = {a/2, 0.0, 0.0};
@@ -26,7 +26,7 @@ Curve Loop(3) = {9,4,5,-8};
 Plane Surface(1) = {1};
 Plane Surface(2) = {2};
 Plane Surface(3) = {3};
-Transfinite Curve{1,2,3,4,5,6,7,8,9} = n/2;
+Transfinite Curve{1,2,3,4,5,6,7,8,9} = n+1;
 Transfinite Surface{2} ;
 Transfinite Surface{1,3} Right;
 
@@ -37,14 +37,8 @@ Physical Surface("Ω") = {1,2,3};
 Physical Point("𝐴") = {1};
 
 Mesh.Algorithm = 1;
-Mesh.MshFileVersion = 2;
-
+//Mesh.MshFileVersion = 2;
+Mesh.SecondOrderIncomplete = 1;
 Mesh 2;
-//RecombineMesh;//+
-SetFactory("Built-in");
-//+
-SetFactory("Built-in");
-//+
-SetFactory("OpenCASCADE");
-//+
-SetFactory("OpenCASCADE");
+//RecombineMesh;
+SetOrder 2;

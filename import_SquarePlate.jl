@@ -5,8 +5,10 @@ function import_SquarePlate(filename::String)
     gmsh.initialize()
     gmsh.open(filename)
 
-    # integrationOrder = 2     # Tri3
-    integrationOrder = 3     # Quad4 
+    integrationOrder = 2     # Tri3
+    # integrationOrder = 4   # Tri6
+    # integrationOrder = 3     # Quad4 
+    # integrationOrder = 4     # Quad8
     integrationOrder_Ωᵍ = 10
     entities = getPhysicalGroups()
     nodes = get𝑿ᵢ()
@@ -49,6 +51,7 @@ function import_SquarePlate_mix(filename1::String,filename2::String)
     gmsh.open(filename1)
 
     integrationOrder = 2      # Tri3
+    # integrationOrder = 4       # Tri6  Quad8
     # integrationOrder = 3      # Quad4
     integrationOrder_Ωᵍ = 10
     entities = getPhysicalGroups()
@@ -69,19 +72,21 @@ function import_SquarePlate_mix(filename1::String,filename2::String)
     xˢ = nodes_s.x
     yˢ = nodes_s.y
     zˢ = nodes_s.z
-    # s = 1.5/ndivs*ones(length(nodes_s))
-    s₁ = 1.5/ndivs*ones(length(nodes_s))
-    s₂ = 1.5/ndivs2*ones(length(nodes_s))
+    s = 1.5/(ndivs)*ones(length(nodes_s))
+    # s₁ = 2.5/(2*ndivs)*ones(length(nodes_s))
+    # s₂ = 2.5/(2*ndivs2)*ones(length(nodes_s))
     Ω = getElements(nodes_s, entities["Ω"])
     # s, var𝐴 = cal_area_support(Ω)
-    # push!(nodes_s,:s₁=>s,:s₂=>s,:s₃=>s)
-    push!(nodes_s,:s₁=>s₁,:s₂=>s₂,:s₃=>s₁)
+    push!(nodes_s,:s₁=>s,:s₂=>s,:s₃=>s)
+    # push!(nodes_s,:s₁=>s₁,:s₂=>s₂,:s₃=>s₁)
     type = ReproducingKernel{:Linear2D,:□,:CubicSpline}
     sp = RegularGrid(xˢ,yˢ,zˢ,n = 1,γ = 2)
+    # type = ReproducingKernel{:Quadratic2D,:□,:CubicSpline}
+    # sp = RegularGrid(xˢ,yˢ,zˢ,n = 3,γ = 5)
 
     gmsh.open(filename1)
-    elements["Ωᵍˢ"] = getElements(nodes_s, entities["Ω"],type, integrationOrder_Ωᵍ, sp)
-    elements["Ωˢ"] = getElements(nodes_s, entities["Ω"], type, integrationOrder, sp)
+    elements["Ωᵍˢ"] = getElements(nodes_s, entities["Ω"], type, integrationOrder_Ωᵍ, sp)
+    elements["Ωˢ"]  = getElements(nodes_s, entities["Ω"], type, integrationOrder, sp)
     nₘ=21
     𝗠 = (0,zeros(nₘ))
     ∂𝗠∂x = (0,zeros(nₘ))

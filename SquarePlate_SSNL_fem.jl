@@ -1,18 +1,20 @@
 using ApproxOperator, JLD, XLSX, LinearAlgebra
-
+using SparseArrays, Pardiso
 import BenchmarkExample: BenchmarkExample
 
 include("import_SquarePlate.jl")
-ndiv = 8
+ndiv = 64
 # elements, nodes = import_SquarePlate("msh/SquarePlate_"*string(ndiv)*".msh");
-elements, nodes = import_SquarePlate("msh/SquarePlate/SquarePlate_quad_"*string(ndiv)*".msh");
+# elements, nodes = import_SquarePlate("msh/SquarePlate/SquarePlate_quad_"*string(ndiv)*".msh");
+elements, nodes = import_SquarePlate("msh/SquarePlate/SquarePlate_tri6_"*string(ndiv)*".msh");
+# elements, nodes = import_SquarePlate("msh/SquarePlate/SquarePlate_quad8_"*string(ndiv)*".msh");
 # elements, nodes = import_SquarePlate_p("msh/SquarePlate_"*string(ndiv)*".msh");
 nₚ = length(nodes)
 
-E = BenchmarkExample.SquarePlate.𝐸
-ν = BenchmarkExample.SquarePlate.𝜈
-h = BenchmarkExample.SquarePlate.ℎ
-L = BenchmarkExample.SquarePlate.𝐿
+E = 10.92e6
+ν = 0.3
+h = 0.001
+L = 1.0
 
 Dᵇ = E*h^3/12/(1-ν^2)
 w(x,y) = 1/3*x^3*(x-1)^3*y^3*(y-1)^3-2*h^2/(5*(1-ν))*(y^3*(y-1)^3*x*(x-1)*(5*x^2-5*x+1)+x^3*(x-1)^3*y*(y-1)*(5*y^2-5*y+1))
@@ -37,9 +39,9 @@ ops = [
     Operator{:∫vθ₂dΓ}(:α=>1e13*E),
     Operator{:L₂_ThickPlate}(:E=>E,:ν=>ν),
 ]
-k = zeros(3*nₚ,3*nₚ)
-kᵇ = zeros(3*nₚ,3*nₚ)
-kˢ = zeros(3*nₚ,3*nₚ)
+k = spzeros(3*nₚ,3*nₚ)
+kᵇ = spzeros(3*nₚ,3*nₚ)
+kˢ = spzeros(3*nₚ,3*nₚ)
 f = zeros(3*nₚ)
 
 # ops[1](elements["Ω"],k)

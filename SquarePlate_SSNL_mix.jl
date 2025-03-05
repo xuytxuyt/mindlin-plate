@@ -3,23 +3,28 @@ using CairoMakie
 using SparseArrays, Pardiso
 import BenchmarkExample: BenchmarkExample
 include("import_SquarePlate.jl")
-include("wirteVTK.jl")
-ndiv  = 16
-ndivs = 13
-ndivs2 = 13
-elements, nodes, nodes_s, Ω, sp, type = import_SquarePlate_mix("msh/SquarePlate/SquarePlate_"*string(ndiv)*".msh","msh/SquarePlate/SquarePlate_"*string(ndivs)*".msh");
+ndiv   = 16
+ndivs  = 16
+# ndivs2 = 16
+
+# elements, nodes, nodes_s, Ω, sp, type = import_SquarePlate_mix("msh/SquarePlate/SquarePlate_"*string(ndiv)*".msh","msh/SquarePlate/SquarePlate_"*string(ndivs)*".msh");
+elements, nodes, nodes_s, Ω, sp, type = import_SquarePlate_mix("msh/SquarePlate/SquarePlate_"*string(ndiv)*".msh","msh/SquarePlate/SquarePlate_q_16.msh");
 # elements, nodes, nodes_s, Ω, sp, type = import_SquarePlate_mix("msh/SquarePlate/SquarePlate_"*string(ndiv)*".msh","msh/SquarePlate/SquarePlate_"*string(ndivs)*"_"*string(ndivs2)*".msh");
-# elements, nodes, nodes_s, Ω , sp, type= import_SquarePlate_mix("msh/SquarePlate/SquarePlate_quad_"*string(ndiv)*".msh","msh/SquarePlate/SquarePlate_quad_"*string(ndivs)*".msh");
-# elements, nodes, nodes_s, Ω = import_SquarePlate_mix("msh/SquarePlate/SquarePlate_quad_"*string(ndiv)*".msh","msh/SquarePlate/SquarePlate_quad_"*string(ndivs)*"_"*string(ndivs2)*".msh");
+# elements, nodes, nodes_s, Ω, sp, type = import_SquarePlate_mix("msh/SquarePlate/SquarePlate_quad_"*string(ndiv)*".msh","msh/SquarePlate/SquarePlate_quad_"*string(ndivs)*".msh");
+# elements, nodes, nodes_s, Ω, sp, type = import_SquarePlate_mix("msh/SquarePlate/SquarePlate_quad_"*string(ndiv)*".msh","msh/SquarePlate/SquarePlate_quad_"*string(ndivs)*"_"*string(ndivs2)*".msh");
+# elements, nodes, nodes_s, Ω, sp, type = import_SquarePlate_mix("msh/SquarePlate/SquarePlate_tri6_"*string(ndiv)*".msh","msh/SquarePlate/SquarePlate_tri6_"*string(ndivs)*".msh");
+# elements, nodes, nodes_s, Ω, sp, type = import_SquarePlate_mix("msh/SquarePlate/SquarePlate_tri6_"*string(ndiv)*".msh","msh/SquarePlate/SquarePlate_tri6_"*string(ndivs)*"_"*string(ndivs2)*".msh");
+# elements, nodes, nodes_s, Ω, sp, type = import_SquarePlate_mix("msh/SquarePlate/SquarePlate_quad8_"*string(ndiv)*".msh","msh/SquarePlate/SquarePlate_quad8_"*string(ndivs)*".msh");
+# elements, nodes, nodes_s, Ω, sp, type = import_SquarePlate_mix("msh/SquarePlate/SquarePlate_quad8_"*string(ndiv)*".msh","msh/SquarePlate/SquarePlate_quad8_"*string(ndivs)*"_"*string(ndivs2)*".msh");
 
 nᵇ = length(nodes)
 nˢ = length(nodes_s)
 nₑ = length(elements["Ω"])
 nₑₛ = length(Ω)
-E = BenchmarkExample.SquarePlate.𝐸
-ν = BenchmarkExample.SquarePlate.𝜈
-h = BenchmarkExample.SquarePlate.ℎ
-L = BenchmarkExample.SquarePlate.𝐿
+E = 10.92e6
+ν = 0.3
+h = 0.001
+L = 1.0
 # ps = MKLPardisoSolver()
 
 Dᵇ = E*h^3/12/(1-ν^2)
@@ -31,12 +36,12 @@ F(x,y) = E*h^3/(12*(1-ν^2))*(12*y*(y-1)*(5*x^2-5*x+1)*(2*y^2*(y-1)^2+x*(x-1)*(5
 
 w₁(x,y) = (x-1)^2*x^2*(2*x-1)*(y-1)^3*y^3-2*h^2/(5*(1-ν))*((20*x^3-30*x^2+12*x-1)*(y-1)^3*y^3+3*(x-1)^2*x^2*(2*x-1)*(y-1)*y*(5*y^2-5*y+1))
 w₂(x,y) = (x-1)^3*x^3*(y-1)^2*y^2*(2*y-1)-2*h^2/(5*(1-ν))*(3*(x-1)*x*(5*x^2-5*x+1)*(y-1)^2*y^2*(2*y-1)+x^3*(x-1)^3*(20*y^3-30*y^2+12*y-1))
-# θ₁₁(x,y) = 2*(x-1)*x*(5*x^2-5*x+1)*(y-1)^3*y^3
-# θ₁₂(x,y) = 3*(x-1)^2*x^2*(2*x-1)*(y-1)^2*y^2*(2*y-1)
-# θ₂₂(x,y) = 2*(x-1)^3*x^3*(y-1)*y*(5*y^2-5*y+1)
-# M₁₁(x,y)= -Dᵇ*(θ₁₁(x,y)+ν*θ₂₂(x,y))
-# M₁₂(x,y)= -Dᵇ*(1-ν)*θ₁₂(x,y)
-# M₂₂(x,y)= -Dᵇ*(ν*θ₁₁(x,y)+θ₂₂(x,y))
+θ₁₁(x,y) = 2*(x-1)*x*(5*x^2-5*x+1)*(y-1)^3*y^3
+θ₁₂(x,y) = 3*(x-1)^2*x^2*(2*x-1)*(y-1)^2*y^2*(2*y-1)
+θ₂₂(x,y) = 2*(x-1)^3*x^3*(y-1)*y*(5*y^2-5*y+1)
+M₁₁(x,y)= -Dᵇ*(θ₁₁(x,y)+ν*θ₂₂(x,y))
+M₁₂(x,y)= -Dᵇ*(1-ν)*θ₁₂(x,y)
+M₂₂(x,y)= -Dᵇ*(ν*θ₁₁(x,y)+θ₂₂(x,y))
 Q₁(x,y) = Dˢ*(w₁(x,y)-θ₁(x,y))
 Q₂(x,y) = Dˢ*(w₂(x,y)-θ₂(x,y))
 eval(prescribeForSSNonUniformLoading)
@@ -93,9 +98,11 @@ ops[7](elements["Γʳ"],kᵇ,f)
 # ops[9](elements["Γʳ"],f)
 # ops[10](elements["Γᵇ"],f)
 # ops[10](elements["Γᵗ"],f)
+# ops[10](elements["Γˡ"],f)
 # ops[10](elements["Γʳ"],f)
 # ops[11](elements["Γᵇ"],f) 
 # ops[11](elements["Γᵗ"],f)
+# ops[11](elements["Γˡ"],f)
 # ops[11](elements["Γʳ"],f)
 
 k = [kᵇ kʷˢ;kʷˢ' kˢˢ]
@@ -136,14 +143,13 @@ a = log10(L₂_u)
 b = log10(L₂_q)
 println(a)
 println(b)
-
-# index = 40:90
+# index = 1:20
 # XLSX.openxlsx("./xlsx/SquarePlate.xlsx", mode="rw") do xf
-#     Sheet = xf[1]
-#     ind = findfirst(n->n==ndivs,index)+1
-#     Sheet["A"*string(ind)] = nˢ
-#     Sheet["B"*string(ind)] = a
-#     Sheet["C"*string(ind)] = b
+#     Sheet = xf[6]
+#     ind = findfirst(n->n==ndivs,index)+2
+#     Sheet["J"*string(ind)] = nˢ
+#     Sheet["K"*string(ind)] = a
+#     Sheet["L"*string(ind)] = b
 # end
 
 # println(wᶜ)
@@ -157,44 +163,51 @@ println(b)
 #     Sheet["C"*string(ind)] = a
 # end
 
-fig = Figure()
-ind = 100
-ax = Axis(fig[1,1], 
-    aspect = DataAspect(), 
-    xticksvisible = false,
-    xticklabelsvisible=false, 
-    yticksvisible = false, 
-    yticklabelsvisible=false,
-)
-hidespines!(ax)
-hidedecorations!(ax)
-xs = LinRange(0, 1, ind)
-ys = LinRange(0, 1, ind)
-zs = zeros(ind,ind)
-𝗠 = zeros(21)
-for (i,x) in enumerate(xs)
-    for (j,y) in enumerate(ys)
-        indices = sp(x,y,0.0)
-        ni = length(indices)
-        𝓒 = [nodes_s[i] for i in indices]
-        data = Dict([:x=>(2,[x]),:y=>(2,[y]),:z=>(2,[0.0]),:𝝭=>(4,zeros(ni)),:𝗠=>(0,𝗠)])
-        ξ = 𝑿ₛ((𝑔=1,𝐺=1,𝐶=1,𝑠=0), data)
-        𝓖 = [ξ]
-        a = type(𝓒,𝓖)
-        set𝝭!(a)
-        q = 0.0
-        N = ξ[:𝝭]
-        for (k,xₖ) in enumerate(𝓒)
-            # q += N[k]*xₖ.q₁
-            q += N[k]*xₖ.q₂
-        end
-        zs[i,j] = q
-    end
-end
-surface!(xs,ys,zeros(ind,ind),color=zs,colorrange=(-0.000025,0.000025),colormap=:lightrainbow)
-contour!(xs,ys,zs,levels=-0.000025:0.00000715:0.000025,color=:azure)
-# Colorbar(fig[1,2], limits=(-900,900), colormap=:lightrainbow)
-# save("./png/SquarePlate_mix_tri3_q1_"*string(ndiv)*"_"*string(ndivs)*".png",fig, px_per_unit = 10.0)
-save("./png/SquarePlate_mix_tri3_q2_"*string(ndiv)*"_"*string(ndivs)*".png",fig, px_per_unit = 10.0)
+# fig = Figure()
+# ind = 100
+# ax = Axis(fig[1,1], 
+#     aspect = DataAspect(), 
+#     xticksvisible = false,
+#     xticklabelsvisible=false, 
+#     yticksvisible = false, 
+#     yticklabelsvisible=false,
+# )
+# hidespines!(ax)
+# hidedecorations!(ax)
+# xs = LinRange(0, 1, ind)
+# ys = LinRange(0, 1, ind)
+# zs = zeros(ind,ind)
+# 𝗠 = zeros(21)
+# for (i,x) in enumerate(xs)
+#     for (j,y) in enumerate(ys)
+#         indices = sp(x,y,0.0)
+#         ni = length(indices)
+#         𝓒 = [nodes_s[i] for i in indices]
+#         data = Dict([:x=>(2,[x]),:y=>(2,[y]),:z=>(2,[0.0]),:𝝭=>(4,zeros(ni)),:𝗠=>(0,𝗠)])
+#         ξ = 𝑿ₛ((𝑔=1,𝐺=1,𝐶=1,𝑠=0), data)
+#         𝓖 = [ξ]
+#         a = type(𝓒,𝓖)
+#         set𝝭!(a)
+#         q = 0.0
+#         N = ξ[:𝝭]
+#         for (k,xₖ) in enumerate(𝓒)
+#             q += N[k]*xₖ.q₁
+#             # q += N[k]*xₖ.q₂
+#         end
+#         zs[i,j] = q
+#     end
+#  end
+# surface!(xs,ys,zeros(ind,ind),color=zs,colorrange=(-0.000025,0.000025),colormap=:lightrainbow)
+# contour!(xs,ys,zs,levels=-0.000025:0.00000715:0.000025,color=:azure)
+# Colorbar(fig[1,2], limits=(-0.000025,0.000025), colormap=:lightrainbow)
+# save("./png/SquarePlate_mix_tri3_q1_"*string(ndiv)*"_"*string(ndivs)*".png",fig, px_per_unit = 3.0)
+# save("./png/SquarePlate_mix_tri3_q2_"*string(ndiv)*"_"*string(ndivs)*".png",fig, px_per_unit = 10.0)
+# save("./png/SquarePlate_mix_tri6_q1_"*string(ndiv)*"_"*string(ndivs)*".png",fig, px_per_unit = 3.0)
+# save("./png/SquarePlate_mix_colorbar.png",fig, px_per_unit = 10.0)
+# save("./png/SquarePlate_mix_tri6_q2_"*string(ndiv)*"_"*string(ndivs)*".png",fig, px_per_unit = 10.0)
+# save("./png/SquarePlate_mix_quad4_q1_"*string(ndiv)*"_"*string(ndivs)*".png",fig, px_per_unit = 10.0)
+# save("./png/SquarePlate_mix_quad4_q2_"*string(ndiv)*"_"*string(ndivs)*".png",fig, px_per_unit = 10.0)
+# save("./png/SquarePlate_mix_quad8_q1_"*string(ndiv)*"_"*string(ndivs)*".png",fig, px_per_unit = 10.0)
+# save("./png/SquarePlate_mix_quad8_q2_"*string(ndiv)*"_"*string(ndivs)*".png",fig, px_per_unit = 10.0)
 
-fig
+# fig
