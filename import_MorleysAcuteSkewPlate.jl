@@ -53,8 +53,8 @@ function import_MorleysAcuteSkewPlate_mix(filename1::String,filename2::String)
     xˢ = nodes_s.x
     yˢ = nodes_s.y
     zˢ = nodes_s.z
-    s = 2.5*100/(2*ndivs)*ones(length(nodes_s))
-    Ω = getElements(nodes_s, entities["Ω"])
+    s = 2.5*100/(ndivs)*ones(length(nodes_s))
+    # Ω = getElements(nodes_s, entities["Ω"])
     push!(nodes_s,:s₁=>s,:s₂=>s,:s₃=>s)
     # type = ReproducingKernel{:Linear2D,:□,:CubicSpline}
     # sp = RegularGrid(xˢ,yˢ,zˢ,n = 1,γ = 2)
@@ -73,7 +73,7 @@ function import_MorleysAcuteSkewPlate_mix(filename1::String,filename2::String)
     push!(elements["Ωᵍˢ"], :𝝭=>:𝑠, :∂𝝭∂x=>:𝑠, :∂𝝭∂y=>:𝑠)
     push!(elements["Ωᵍˢ"], :𝗠=>𝗠, :∂𝗠∂x=>∂𝗠∂x, :∂𝗠∂y=>∂𝗠∂y)
     # gmsh.finalize()
-    return elements, nodes, nodes_s, Ω, sp, type
+    return elements, nodes, nodes_s, sp, type
 end
 
 prescribeForSSUniformLoading = quote

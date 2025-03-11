@@ -15,10 +15,11 @@ sp = RegularGrid(x,y,z,n = 3,γ = 5)
 s = 1.5/4 .*ones(length(nodes))
 push!(nodes,:s₁=>s,:s₂=>s,:s₃=>s)
 type = ReproducingKernel{:Linear2D,:□,:CubicSpline}
+# type = ReproducingKernel{:Quadratic2D,:□,:CubicSpline}
 # push!(nodes,:s=>s)
 # type = ReproducingKernel{:Linear2D,:○,:CubicSpline}
 
-id = 9
+id = 21
 xₑ = nodes[id].x
 yₑ = nodes[id].y
 inte = 500
@@ -39,13 +40,14 @@ for (i,x) in enumerate(xs)
       zs[i,j] = N[indexin(id,collect(indices))...]
    end
 end
-fig = Figure() # 3 4
-ax = Axis3( # 3 4
+fig = Figure() 
+
+ax = Axis3( 
     fig[1,1],
     xlabel = " ",
     ylabel = " ",
     zlabel = " ",
-    zticks = 0:0.4:0.8 ,
+   #  zticks = 0:0.4:0.8 ,
     xticksvisible = false,
     yticksvisible = false,
    #  zticksvisible = false,
@@ -61,14 +63,14 @@ ax = Axis3( # 3 4
 )  
 # hidespines!(ax)
 # hidedecorations!(ax)
-
+limits!(ax, (0, 1), (0, 1), (-0.1, 1))
 surface!(xs, ys, zs,
     colormap = :Spectral,
     colorrange = (0,1),
     transparency = false,
     shading = false,
 )
-# save("./png/shapefunction2.png",fig, px_per_unit = 10.0) 
+save("./png/shapefunction11.png",fig, px_per_unit = 3.0) 
  fig
 
      

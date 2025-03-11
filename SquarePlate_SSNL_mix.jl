@@ -3,18 +3,21 @@ using CairoMakie
 using SparseArrays, Pardiso
 import BenchmarkExample: BenchmarkExample
 include("import_SquarePlate.jl")
-ndiv   = 16
-ndivs  = 16
+ndiv   = 8
+ndivs  = 6
 # ndivs2 = 16
 
 # elements, nodes, nodes_s, Ω, sp, type = import_SquarePlate_mix("msh/SquarePlate/SquarePlate_"*string(ndiv)*".msh","msh/SquarePlate/SquarePlate_"*string(ndivs)*".msh");
-elements, nodes, nodes_s, Ω, sp, type = import_SquarePlate_mix("msh/SquarePlate/SquarePlate_"*string(ndiv)*".msh","msh/SquarePlate/SquarePlate_q_16.msh");
+# elements, nodes, nodes_s, Ω, sp, type = import_SquarePlate_mix("msh/SquarePlate/SquarePlate_"*string(ndiv)*".msh","msh/SquarePlate/SquarePlate_q_"*string(ndivs)*".msh");
 # elements, nodes, nodes_s, Ω, sp, type = import_SquarePlate_mix("msh/SquarePlate/SquarePlate_"*string(ndiv)*".msh","msh/SquarePlate/SquarePlate_"*string(ndivs)*"_"*string(ndivs2)*".msh");
 # elements, nodes, nodes_s, Ω, sp, type = import_SquarePlate_mix("msh/SquarePlate/SquarePlate_quad_"*string(ndiv)*".msh","msh/SquarePlate/SquarePlate_quad_"*string(ndivs)*".msh");
+# elements, nodes, nodes_s, Ω, sp, type = import_SquarePlate_mix("msh/SquarePlate/SquarePlate_quad_"*string(ndiv)*".msh","msh/SquarePlate/SquarePlate_quad_q_"*string(ndivs)*".msh");
 # elements, nodes, nodes_s, Ω, sp, type = import_SquarePlate_mix("msh/SquarePlate/SquarePlate_quad_"*string(ndiv)*".msh","msh/SquarePlate/SquarePlate_quad_"*string(ndivs)*"_"*string(ndivs2)*".msh");
 # elements, nodes, nodes_s, Ω, sp, type = import_SquarePlate_mix("msh/SquarePlate/SquarePlate_tri6_"*string(ndiv)*".msh","msh/SquarePlate/SquarePlate_tri6_"*string(ndivs)*".msh");
+# elements, nodes, nodes_s, Ω, sp, type = import_SquarePlate_mix("msh/SquarePlate/SquarePlate_tri6_"*string(ndiv)*".msh","msh/SquarePlate/SquarePlate_tri6_q_"*string(ndivs)*".msh");
 # elements, nodes, nodes_s, Ω, sp, type = import_SquarePlate_mix("msh/SquarePlate/SquarePlate_tri6_"*string(ndiv)*".msh","msh/SquarePlate/SquarePlate_tri6_"*string(ndivs)*"_"*string(ndivs2)*".msh");
-# elements, nodes, nodes_s, Ω, sp, type = import_SquarePlate_mix("msh/SquarePlate/SquarePlate_quad8_"*string(ndiv)*".msh","msh/SquarePlate/SquarePlate_quad8_"*string(ndivs)*".msh");
+elements, nodes, nodes_s, Ω, sp, type = import_SquarePlate_mix("msh/SquarePlate/SquarePlate_quad8_"*string(ndiv)*".msh","msh/SquarePlate/SquarePlate_quad8_"*string(ndivs)*".msh");
+# elements, nodes, nodes_s, Ω, sp, type = import_SquarePlate_mix("msh/SquarePlate/SquarePlate_quad8_"*string(ndiv)*".msh","msh/SquarePlate/SquarePlate_quad8_q_"*string(ndivs)*".msh");
 # elements, nodes, nodes_s, Ω, sp, type = import_SquarePlate_mix("msh/SquarePlate/SquarePlate_quad8_"*string(ndiv)*".msh","msh/SquarePlate/SquarePlate_quad8_"*string(ndivs)*"_"*string(ndivs2)*".msh");
 
 nᵇ = length(nodes)
@@ -163,51 +166,53 @@ println(b)
 #     Sheet["C"*string(ind)] = a
 # end
 
-# fig = Figure()
-# ind = 100
-# ax = Axis(fig[1,1], 
-#     aspect = DataAspect(), 
-#     xticksvisible = false,
-#     xticklabelsvisible=false, 
-#     yticksvisible = false, 
-#     yticklabelsvisible=false,
-# )
-# hidespines!(ax)
-# hidedecorations!(ax)
-# xs = LinRange(0, 1, ind)
-# ys = LinRange(0, 1, ind)
-# zs = zeros(ind,ind)
-# 𝗠 = zeros(21)
-# for (i,x) in enumerate(xs)
-#     for (j,y) in enumerate(ys)
-#         indices = sp(x,y,0.0)
-#         ni = length(indices)
-#         𝓒 = [nodes_s[i] for i in indices]
-#         data = Dict([:x=>(2,[x]),:y=>(2,[y]),:z=>(2,[0.0]),:𝝭=>(4,zeros(ni)),:𝗠=>(0,𝗠)])
-#         ξ = 𝑿ₛ((𝑔=1,𝐺=1,𝐶=1,𝑠=0), data)
-#         𝓖 = [ξ]
-#         a = type(𝓒,𝓖)
-#         set𝝭!(a)
-#         q = 0.0
-#         N = ξ[:𝝭]
-#         for (k,xₖ) in enumerate(𝓒)
-#             q += N[k]*xₖ.q₁
-#             # q += N[k]*xₖ.q₂
-#         end
-#         zs[i,j] = q
-#     end
-#  end
-# surface!(xs,ys,zeros(ind,ind),color=zs,colorrange=(-0.000025,0.000025),colormap=:lightrainbow)
-# contour!(xs,ys,zs,levels=-0.000025:0.00000715:0.000025,color=:azure)
+fig = Figure()
+ind = 100
+ax = Axis(fig[1,1], 
+    aspect = DataAspect(), 
+    xticksvisible = false,
+    xticklabelsvisible=false, 
+    yticksvisible = false, 
+    yticklabelsvisible=false,
+)
+hidespines!(ax)
+hidedecorations!(ax)
+xs = LinRange(0, 1, ind)
+ys = LinRange(0, 1, ind)
+zs = zeros(ind,ind)
+𝗠 = zeros(21)
+# s = 2.1/(ndivs)*ones(length(nodes_s))
+# push!(nodes_s,:s₁=>s,:s₂=>s,:s₃=>s)
+for (i,x) in enumerate(xs)
+    for (j,y) in enumerate(ys)
+        indices = sp(x,y,0.0)
+        ni = length(indices)
+        𝓒 = [nodes_s[i] for i in indices]
+        data = Dict([:x=>(2,[x]),:y=>(2,[y]),:z=>(2,[0.0]),:𝝭=>(4,zeros(ni)),:𝗠=>(0,𝗠)])
+        ξ = 𝑿ₛ((𝑔=1,𝐺=1,𝐶=1,𝑠=0), data)
+        𝓖 = [ξ]
+        a = type(𝓒,𝓖)
+        set𝝭!(a)
+        q = 0.0
+        N = ξ[:𝝭]
+        for (k,xₖ) in enumerate(𝓒)
+            q += N[k]*xₖ.q₁
+            # q += N[k]*xₖ.q₂
+        end
+        zs[i,j] = q
+    end
+ end
+surface!(xs,ys,zeros(ind,ind),color=zs,colorrange=(-0.000025,0.000025),colormap=:lightrainbow)
+contour!(xs,ys,zs,levels=-0.000025:0.00000715:0.000025,color=:azure)
 # Colorbar(fig[1,2], limits=(-0.000025,0.000025), colormap=:lightrainbow)
 # save("./png/SquarePlate_mix_tri3_q1_"*string(ndiv)*"_"*string(ndivs)*".png",fig, px_per_unit = 3.0)
 # save("./png/SquarePlate_mix_tri3_q2_"*string(ndiv)*"_"*string(ndivs)*".png",fig, px_per_unit = 10.0)
 # save("./png/SquarePlate_mix_tri6_q1_"*string(ndiv)*"_"*string(ndivs)*".png",fig, px_per_unit = 3.0)
 # save("./png/SquarePlate_mix_colorbar.png",fig, px_per_unit = 10.0)
 # save("./png/SquarePlate_mix_tri6_q2_"*string(ndiv)*"_"*string(ndivs)*".png",fig, px_per_unit = 10.0)
-# save("./png/SquarePlate_mix_quad4_q1_"*string(ndiv)*"_"*string(ndivs)*".png",fig, px_per_unit = 10.0)
+# save("./png/SquarePlate_mix_quad4_q1_"*string(ndiv)*"_"*string(ndivs)*".png",fig, px_per_unit = 3.0)
 # save("./png/SquarePlate_mix_quad4_q2_"*string(ndiv)*"_"*string(ndivs)*".png",fig, px_per_unit = 10.0)
-# save("./png/SquarePlate_mix_quad8_q1_"*string(ndiv)*"_"*string(ndivs)*".png",fig, px_per_unit = 10.0)
+# save("./png/SquarePlate_mix_quad8_q1_"*string(ndiv)*"_"*string(ndivs)*".png",fig, px_per_unit = 3.0)
 # save("./png/SquarePlate_mix_quad8_q2_"*string(ndiv)*"_"*string(ndivs)*".png",fig, px_per_unit = 10.0)
 
-# fig
+fig

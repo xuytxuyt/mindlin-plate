@@ -1,14 +1,15 @@
 
 a = 5.0;
-n = 4;
+n = 27;
+b = a/(2*32);
 
-Point(1) = {0.0, 0.0, 0.0};
-Point(2) = {a/2, 0.0, 0.0};
-Point(3) = {  a, 0.0, 0.0};
-Point(4) = {a/2^0.5, a/2^0.5, 0.0};
-Point(5) = {0.0,   a, 0.0};
-Point(6) = {0.0, a/2, 0.0};
-Point(7) = {a/2^0.5/2, a/2^0.5/2, 0.0};
+Point(1) = {b, b, 0.0};
+Point(2) = {(a-b)/2, b, 0.0};
+Point(3) = {  a-b, b, 0.0};
+Point(4) = {b+(a-2*b)/2^0.5, b+(a-2*b)/2^0.5, 0.0};
+Point(5) = {b,   a-b, 0.0};
+Point(6) = {b, (a-b)/2, 0.0};
+Point(7) = {2*b+a/2^0.5/2, 2*b+a/2^0.5/2, 0.0};
 
 Line(1) = {1,2};
 Line(2) = {2,3};
@@ -26,7 +27,7 @@ Curve Loop(3) = {9,4,5,-8};
 Plane Surface(1) = {1};
 Plane Surface(2) = {2};
 Plane Surface(3) = {3};
-Transfinite Curve{1,2,3,4,5,6,7,8,9} = n+1;
+Transfinite Curve{1,2,3,4,5,6,7,8,9} = n;
 Transfinite Surface{2} ;
 Transfinite Surface{1,3} Right;
 
@@ -37,8 +38,8 @@ Physical Surface("Ω") = {1,2,3};
 Physical Point("𝐴") = {1};
 
 Mesh.Algorithm = 1;
-//Mesh.MshFileVersion = 2;
-Mesh.SecondOrderIncomplete = 1;
+Mesh.MshFileVersion = 2;
+//Mesh.SecondOrderIncomplete = 1;
 Mesh 2;
 RecombineMesh;
-SetOrder 2;
+//SetOrder 2;

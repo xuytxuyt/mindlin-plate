@@ -1,5 +1,4 @@
-
-n = 64;
+n = 32;
 a = 100.0;
 b = 3^0.5*a/2;
 c = 100.0/n;
@@ -30,8 +29,8 @@ Physical Curve("Γᵇ") = {1,2};
 Physical Curve("Γʳ") = {3,4};
 Physical Surface("Ω") = {1};
 Mesh.Algorithm = 1;
-Mesh.MshFileVersion = 2;
-//Mesh.SecondOrderIncomplete = 1;
+//Mesh.MshFileVersion = 2;
+Mesh.SecondOrderIncomplete = 1;
 Mesh 2;
-//RecombineMesh;
-//SetOrder 2;
+RecombineMesh;
+SetOrder 2;

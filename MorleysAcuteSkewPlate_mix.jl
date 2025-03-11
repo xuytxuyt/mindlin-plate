@@ -4,12 +4,16 @@ using SparseArrays, Pardiso
 using CairoMakie
 
 include("import_MorleysAcuteSkewPlate.jl")
-ndiv  = 16
-ndivs = 12
-# elements, nodes, nodes_s, Ω, sp, type= import_MorleysAcuteSkewPlate_mix("msh/MorleysAcuteSkewPlate/MorleysAcuteSkewPlate_"*string(ndiv)*".msh","msh/MorleysAcuteSkewPlate/MorleysAcuteSkewPlate_"*string(ndivs)*".msh");
+ndiv  = 32
+ndivs = 32
+# elements, nodes, nodes_s, sp, type= import_MorleysAcuteSkewPlate_mix("msh/MorleysAcuteSkewPlate/MorleysAcuteSkewPlate_"*string(ndiv)*".msh","msh/MorleysAcuteSkewPlate/MorleysAcuteSkewPlate_"*string(ndivs)*".msh");
+# elements, nodes, nodes_s, sp, type= import_MorleysAcuteSkewPlate_mix("msh/MorleysAcuteSkewPlate/MorleysAcuteSkewPlate_"*string(ndiv)*".msh","msh/MorleysAcuteSkewPlate/MorleysAcuteSkewPlate_q_"*string(ndivs)*".msh");
 # elements, nodes, nodes_s, Ω, sp, type= import_MorleysAcuteSkewPlate_mix("msh/MorleysAcuteSkewPlate/MorleysAcuteSkewPlate_quad_"*string(ndiv)*".msh","msh/MorleysAcuteSkewPlate/MorleysAcuteSkewPlate_quad_"*string(ndivs)*".msh");
-# elements, nodes, nodes_s, Ω, sp, type= import_MorleysAcuteSkewPlate_mix("msh/MorleysAcuteSkewPlate/MorleysAcuteSkewPlate_tri6_"*string(ndiv)*".msh","msh/MorleysAcuteSkewPlate/MorleysAcuteSkewPlate_tri6_"*string(ndivs)*".msh");
-elements, nodes, nodes_s, Ω, sp, type= import_MorleysAcuteSkewPlate_mix("msh/MorleysAcuteSkewPlate/MorleysAcuteSkewPlate_quad8_"*string(ndiv)*".msh","msh/MorleysAcuteSkewPlate/MorleysAcuteSkewPlate_quad8_"*string(ndivs)*".msh");
+# elements, nodes, nodes_s, sp, type= import_MorleysAcuteSkewPlate_mix("msh/MorleysAcuteSkewPlate/MorleysAcuteSkewPlate_quad_"*string(ndiv)*".msh","msh/MorleysAcuteSkewPlate/MorleysAcuteSkewPlate_quad_q_"*string(ndivs)*".msh");
+# elements, nodes, nodes_s, sp, type= import_MorleysAcuteSkewPlate_mix("msh/MorleysAcuteSkewPlate/MorleysAcuteSkewPlate_tri6_"*string(ndiv)*".msh","msh/MorleysAcuteSkewPlate/MorleysAcuteSkewPlate_tri6_"*string(ndivs)*".msh");
+elements, nodes, nodes_s, sp, type= import_MorleysAcuteSkewPlate_mix("msh/MorleysAcuteSkewPlate/MorleysAcuteSkewPlate_tri6_"*string(ndiv)*".msh","msh/MorleysAcuteSkewPlate/MorleysAcuteSkewPlate_tri6_q_"*string(ndivs)*".msh");
+# elements, nodes, nodes_s, sp, type= import_MorleysAcuteSkewPlate_mix("msh/MorleysAcuteSkewPlate/MorleysAcuteSkewPlate_quad8_"*string(ndiv)*".msh","msh/MorleysAcuteSkewPlate/MorleysAcuteSkewPlate_quad8_"*string(ndivs)*".msh");
+# elements, nodes, nodes_s, sp, type= import_MorleysAcuteSkewPlate_mix("msh/MorleysAcuteSkewPlate/MorleysAcuteSkewPlate_quad8_"*string(ndiv)*".msh","msh/MorleysAcuteSkewPlate/MorleysAcuteSkewPlate_quad8_q_"*string(ndivs)*".msh");
 
 nᵇ = length(nodes)
 nˢ = length(nodes_s)
@@ -47,9 +51,9 @@ ops = [
     Operator{:∫vθ₁dΓ}(:α=>1e13*E),
     Operator{:∫vθ₂dΓ}(:α=>1e13*E),
 ]
-kᵇ = spzeros(3*nᵇ,3*nᵇ)
-kʷˢ = spzeros(3*nᵇ,2*nˢ)
-kˢˢ = spzeros(2*nˢ,2*nˢ)
+kᵇ = zeros(3*nᵇ,3*nᵇ)
+kʷˢ = zeros(3*nᵇ,2*nˢ)
+kˢˢ = zeros(2*nˢ,2*nˢ)
 f = zeros(3*nᵇ)
 
 ops[1](elements["Ω"],kᵇ)
@@ -79,7 +83,7 @@ push!(nodes_s,:q₁=>s₁,:q₂=>s₂)
 w = ops𝐴(elements["𝐴"])
 wᶜ= w*10^2*Dᵇ/(F*L^4)
 
-# println(wᶜ)
+println(wᶜ)
 # index = 20:64
 # XLSX.openxlsx("./xlsx/SquarePlate.xlsx", mode="rw") do xf
 #     Sheet = xf[2]
@@ -99,7 +103,7 @@ wᶜ= w*10^2*Dᵇ/(F*L^4)
 
 
 
-ind = 100
+ind = 50
 
 # xs = LinRange(0, 1, ind)
 # ys = LinRange(0, 1, ind)
@@ -113,7 +117,8 @@ xs₃ = zeros(ind,ind)
 ys₃ = zeros(ind,ind)
 zs₃ = zeros(ind,ind)
 𝗠 = zeros(21)
-
+s = 2.6*100/(ndivs)*ones(length(nodes_s))
+push!(nodes_s,:s₁=>s,:s₂=>s,:s₃=>s)
 for i in 1:ind
     for j in 1:ind
         Δy = 50*3^0.5/(ind-1)
@@ -213,7 +218,7 @@ surface!(xs₃,ys₃,zeros(ind,ind),color=zs₃,colorrange=(-200,200),shading = 
 # save("./png/MorleysAcuteSkewPlate_tri3_q2_"*string(ndiv)*"_"*string(ndivs)*".png",fig, px_per_unit = 10.0)
 # save("./png/MorleysAcuteSkewPlate_tri6_q1_"*string(ndiv)*"_"*string(ndivs)*".png",fig, px_per_unit = 3.0)
 # save("./png/MorleysAcuteSkewPlate_tri6_q2_"*string(ndiv)*"_"*string(ndivs)*".png",fig, px_per_unit = 10.0)
-# save("./png/MorleysAcuteSkewPlate_quad4_q1_"*string(ndiv)*"_"*string(ndivs)*".png",fig, px_per_unit = 3.0)
+# save("./png/MorleysAcuteSkewPlate_quad4_q11_"*string(ndiv)*"_"*string(ndivs)*".png",fig, px_per_unit = 3.0)
 # save("./png/MorleysAcuteSkewPlate_quad4_q2_"*string(ndiv)*"_"*string(ndivs)*".png",fig, px_per_unit = 10.0)
 # save("./png/MorleysAcuteSkewPlate_quad8_q1_"*string(ndiv)*"_"*string(ndivs)*".png",fig, px_per_unit = 3.0)
 # save("./png/MorleysAcuteSkewPlate_quad8_q2_"*string(ndiv)*"_"*string(ndivs)*".png",fig, px_per_unit = 10.0)

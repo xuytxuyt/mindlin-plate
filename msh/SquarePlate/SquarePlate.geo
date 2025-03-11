@@ -1,12 +1,11 @@
-n = 64;
-//a = 1/n;
-//b = 1.0-1/n;
+n = 32;
+a = 1*1/n;
+b = 1.0-1*1/n;
 
-
-//Point(1) = {a, a, 0.0};
-//Point(2) = {  b, a, 0.0};
-//Point(3) = {  b,   b, 0.0};
-//Point(4) = {a,   b, 0.0};
+Point(1) = {a, a, 0.0};
+Point(2) = {  b, a, 0.0};
+Point(3) = {  b,   b, 0.0};
+Point(4) = {a,   b, 0.0};
 
 Line(1) = {1,2};
 Line(2) = {2,3};
@@ -26,8 +25,8 @@ Physical Curve("Γʳ") = {4};
 Physical Surface("Ω") = {1};
 
 Mesh.Algorithm = 1;
-Mesh.MshFileVersion = 2;
-//Mesh.SecondOrderIncomplete = 1;
+//Mesh.MshFileVersion = 2;
+Mesh.SecondOrderIncomplete = 1;
 Mesh 2;
 //RecombineMesh;
-//SetOrder 2;
+SetOrder 2;

@@ -1,6 +1,7 @@
 
 a = 5.0;
-n = 7;
+n = 4;
+
 
 Point(1) = {0.0, 0.0, 0.0};
 Point(2) = {a/2, 0.0, 0.0};
@@ -27,8 +28,8 @@ Plane Surface(1) = {1};
 Plane Surface(2) = {2};
 Plane Surface(3) = {3};
 Transfinite Curve{1,2,3,4,5,6,7,8,9} = n+1;
-Transfinite Surface{2} ;
-Transfinite Surface{1,3} Right;
+Transfinite Surface{1,2} ;
+Transfinite Surface{3} ;
 
 Physical Curve("Γᵇ") = {1,2};
 Physical Curve("Γᵉ") = {3,4};
@@ -37,8 +38,8 @@ Physical Surface("Ω") = {1,2,3};
 Physical Point("𝐴") = {1};
 
 Mesh.Algorithm = 1;
-//Mesh.MshFileVersion = 2;
-Mesh.SecondOrderIncomplete = 1;
+Mesh.MshFileVersion = 2;
+//Mesh.SecondOrderIncomplete = 1;
 Mesh 2;
 //RecombineMesh;
-SetOrder 2;
+//SetOrder 2;

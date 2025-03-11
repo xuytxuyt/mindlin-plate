@@ -5,7 +5,7 @@ function import_SquarePlate(filename::String)
     gmsh.initialize()
     gmsh.open(filename)
 
-    integrationOrder = 2     # Tri3
+    # integrationOrder = 2     # Tri3
     # integrationOrder = 4   # Tri6
     # integrationOrder = 3     # Quad4 
     # integrationOrder = 4     # Quad8
@@ -50,8 +50,8 @@ function import_SquarePlate_mix(filename1::String,filename2::String)
     gmsh.initialize()
     gmsh.open(filename1)
 
-    integrationOrder = 2      # Tri3
-    # integrationOrder = 4       # Tri6  Quad8
+    # integrationOrder = 2      # Tri3
+    integrationOrder = 4       # Tri6  Quad8
     # integrationOrder = 3      # Quad4
     integrationOrder_Ωᵍ = 10
     entities = getPhysicalGroups()
@@ -72,17 +72,18 @@ function import_SquarePlate_mix(filename1::String,filename2::String)
     xˢ = nodes_s.x
     yˢ = nodes_s.y
     zˢ = nodes_s.z
-    s = 1.5/(ndivs)*ones(length(nodes_s))
-    # s₁ = 2.5/(2*ndivs)*ones(length(nodes_s))
+    # s = 3.1/(ndivs)*ones(length(nodes_s))
+    s = 2.4/(ndivs)*ones(length(nodes_s))
+
     # s₂ = 2.5/(2*ndivs2)*ones(length(nodes_s))
     Ω = getElements(nodes_s, entities["Ω"])
     # s, var𝐴 = cal_area_support(Ω)
     push!(nodes_s,:s₁=>s,:s₂=>s,:s₃=>s)
     # push!(nodes_s,:s₁=>s₁,:s₂=>s₂,:s₃=>s₁)
-    type = ReproducingKernel{:Linear2D,:□,:CubicSpline}
-    sp = RegularGrid(xˢ,yˢ,zˢ,n = 1,γ = 2)
-    # type = ReproducingKernel{:Quadratic2D,:□,:CubicSpline}
-    # sp = RegularGrid(xˢ,yˢ,zˢ,n = 3,γ = 5)
+    # type = ReproducingKernel{:Linear2D,:□,:CubicSpline}
+    # sp = RegularGrid(xˢ,yˢ,zˢ,n = 1,γ = 2)
+    type = ReproducingKernel{:Quadratic2D,:□,:CubicSpline}
+    sp = RegularGrid(xˢ,yˢ,zˢ,n = 3,γ = 5)
 
     gmsh.open(filename1)
     elements["Ωᵍˢ"] = getElements(nodes_s, entities["Ω"], type, integrationOrder_Ωᵍ, sp)
@@ -124,6 +125,61 @@ function import_SquarePlate_quad_RI(filename1::String,filename2::String)
     elements["Ωˢ"] = getElements(nodes_s, entities["Ω"], integrationOrder_Ωˢ)
     push!(elements["Ωˢ"], :𝝭=>:𝑠, :∂𝝭∂x=>:𝑠, :∂𝝭∂y=>:𝑠)
     push!(elements["Ωᵍ"], :𝝭=>:𝑠, :∂𝝭∂x=>:𝑠, :∂𝝭∂y=>:𝑠)
+    # gmsh.finalize()
+    return elements, nodes, nodes_s
+end
+
+function import_infsup_linear_mix(filename1::String,filename2::String,nx::Int)
+    gmsh.initialize()
+    gmsh.open(filename1)
+
+    integrationOrder = 2      # Tri3
+    # integrationOrder = 3      # Quad4
+    integrationOrder_Ωᵍ = 10
+    entities = getPhysicalGroups()
+    nodes = get𝑿ᵢ()
+    x = nodes.x
+    y = nodes.y
+    z = nodes.z
+    elements = Dict{String,Vector{ApproxOperator.AbstractElement}}()
+    elements["Ω"] = getElements(nodes, entities["Ω"], integrationOrder)
+    elements["Ωᵍ"] = getElements(nodes, entities["Ω"], integrationOrder_Ωᵍ)
+    elements["Γᵇ"] = getElements(nodes, entities["Γᵇ"], integrationOrder,normal=true)
+    elements["Γᵗ"] = getElements(nodes, entities["Γᵗ"], integrationOrder,normal=true)
+    elements["Γˡ"] = getElements(nodes, entities["Γˡ"], integrationOrder,normal=true)
+    elements["Γʳ"] = getElements(nodes, entities["Γʳ"], integrationOrder,normal=true)
+
+    push!(elements["Ω"], :𝝭=>:𝑠, :∂𝝭∂x=>:𝑠, :∂𝝭∂y=>:𝑠)
+    push!(elements["Ωᵍ"], :𝝭=>:𝑠, :∂𝝭∂x=>:𝑠, :∂𝝭∂y=>:𝑠)
+    push!(elements["Γᵇ"], :𝝭=>:𝑠)
+    push!(elements["Γᵗ"], :𝝭=>:𝑠)
+    push!(elements["Γˡ"], :𝝭=>:𝑠)
+    push!(elements["Γʳ"], :𝝭=>:𝑠)
+
+    gmsh.open(filename2)
+    nodes_s = get𝑿ᵢ()
+    xˢ = nodes_s.x
+    yˢ = nodes_s.y
+    zˢ = nodes_s.z
+
+    s = 1.5/nx*ones(length(nodes_s))
+    push!(nodes_s,:s₁=>s,:s₂=>s,:s₃=>s)
+    type = ReproducingKernel{:Linear2D,:□,:CubicSpline}
+    sp = RegularGrid(xˢ,yˢ,zˢ,n = 1,γ = 2)
+    # type = ReproducingKernel{:Quadratic2D,:□,:CubicSpline}
+    # sp = RegularGrid(xˢ,yˢ,zˢ,n = 3,γ = 5)
+
+    gmsh.open(filename1)
+    elements["Ωᵍˢ"] = getElements(nodes_s, entities["Ω"], type, integrationOrder_Ωᵍ, sp)
+    elements["Ωˢ"]  = getElements(nodes_s, entities["Ω"], type, integrationOrder, sp)
+    nₘ=6
+    𝗠 = (0,zeros(nₘ))
+    ∂𝗠∂x = (0,zeros(nₘ))
+    ∂𝗠∂y = (0,zeros(nₘ))
+    push!(elements["Ωˢ"], :𝝭=>:𝑠, :∂𝝭∂x=>:𝑠, :∂𝝭∂y=>:𝑠)
+    push!(elements["Ωˢ"], :𝗠=>𝗠, :∂𝗠∂x=>∂𝗠∂x, :∂𝗠∂y=>∂𝗠∂y)
+    push!(elements["Ωᵍˢ"], :𝝭=>:𝑠, :∂𝝭∂x=>:𝑠, :∂𝝭∂y=>:𝑠)
+    push!(elements["Ωᵍˢ"], :𝗠=>𝗠, :∂𝗠∂x=>∂𝗠∂x, :∂𝗠∂y=>∂𝗠∂y)
     # gmsh.finalize()
     return elements, nodes, nodes_s
 end
@@ -278,6 +334,8 @@ prescribeForCantilever = quote
     prescribe!(elements["Γˡ"],:Q₂=>(x,y,z)->Q₂(x,y))
     prescribe!(elements["Γʳ"],:Q₂=>(x,y,z)->Q₂(x,y))
 end
+
+
 
 function cal_area_support(elms::Vector{ApproxOperator.AbstractElement})
     𝐴s = zeros(length(elms))
