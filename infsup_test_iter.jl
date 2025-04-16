@@ -1,10 +1,10 @@
 using ApproxOperator, JLD, XLSX, Printf
 using CairoMakie
-using SparseArrays, Pardiso
+# using SparseArrays, Pardiso
 import BenchmarkExample: BenchmarkExample
 include("import_SquarePlate.jl")
-ndiv   = 32
-indices = 2:64
+ndiv   = 8
+indices = 5:5
 
 n_eig_nonzeros = zeros(Int,length(indices))
 n_eig_real = zeros(Int,length(indices))
@@ -113,8 +113,8 @@ ops[7](elements["Γʳ"],kᵇ,f)
 
 
 # k = kʷˢ*inv(kˢˢ)*kʷˢ'
-val = eigvals(kʷˢ*(kˢˢ\kʷˢ'),kᵇ)
-# println(val)
+val = eigvals(kʷˢ*(kˢˢ\kʷˢ'))
+println(val)
 # println(log10(a[3*nᵇ-2nˢ+1]))
 # println(a[3*nᵇ-2nˢ+1])
 

@@ -4,12 +4,12 @@ import BenchmarkExample: BenchmarkExample
 using SparseArrays, Pardiso
 
 include("import_Circular.jl")
-ndiv  = 64
-ndivs = 64
-# elements, nodes, nodes_s, Ω, sp, type= import_Circular_mix("msh/circular/circular_"*string(ndiv)*".msh","msh/circular/circular_"*string(ndivs)*".msh");
+ndiv  = 32
+ndivs = 28
+elements, nodes, nodes_s, Ω, sp, type= import_Circular_mix("msh/circular/circular_"*string(ndiv)*".msh","msh/circular/circular_"*string(ndivs)*".msh");
 # elements, nodes, nodes_s, Ω, sp, type= import_Circular_mix("msh/circular/circular_"*string(ndiv)*".msh","msh/circular/circular_q_"*string(ndivs)*".msh");
 # elements, nodes, nodes_s, Ω, sp, type= import_Circular_mix("msh/circular/circular_quad_"*string(ndiv)*".msh","msh/circular/circular_quad_"*string(ndivs)*".msh");
-elements, nodes, nodes_s, Ω, sp, type= import_Circular_mix("msh/circular/circular_quad_"*string(ndiv)*".msh","msh/circular/circular_quad_q_"*string(ndivs)*".msh");
+# elements, nodes, nodes_s, Ω, sp, type= import_Circular_mix("msh/circular/circular_quad_"*string(ndiv)*".msh","msh/circular/circular_"*string(ndivs)*".msh");
 # elements, nodes, nodes_s, Ω, sp, type= import_Circular_mix("msh/circular/circular_tri6_"*string(ndiv)*".msh","msh/circular/circular_tri6_"*string(ndivs)*".msh");
 # elements, nodes, nodes_s, Ω, sp, type= import_Circular_mix("msh/circular/circular_tri6_"*string(ndiv)*".msh","msh/circular/circular_tri6_"*string(ndivs)*".msh");
 # elements, nodes, nodes_s, Ω, sp, type= import_Circular_mix("msh/circular/circular_tri6_"*string(ndiv)*".msh","msh/circular/circular_tri6_q_"*string(ndivs)*".msh");
@@ -160,7 +160,7 @@ surface!(xs₄,ys₄,zeros(ind,ind),color=zs₄,colorrange=(-2.5,0.13),shading =
 
 # save("./png/Circular_tri3_q11_"*string(ndiv)*"_"*string(ndivs)*".png",fig, px_per_unit = 3.0)
 # save("./png/Circular_tri6_q11_"*string(ndiv)*"_"*string(ndivs)*".png",fig, px_per_unit = 3.0)
-save("./png/Circular_quad4_q11_"*string(ndiv)*"_"*string(ndivs)*".png",fig, px_per_unit = 3.0)
+# save("./png/Circular_quad4_q11_"*string(ndiv)*"_"*string(ndivs)*".png",fig, px_per_unit = 3.0)
 # save("./png/Circular_quad8_q1_"*string(ndiv)*"_"*string(ndivs)*".png",fig, px_per_unit = 3.0)
 
 fig

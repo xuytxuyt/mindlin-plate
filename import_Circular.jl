@@ -49,7 +49,7 @@ function import_Circular_mix(filename1::String,filename2::String)
     xˢ = nodes_s.x
     yˢ = nodes_s.y
     zˢ = nodes_s.z
-    s = 2.7*5/(ndivs)*ones(length(nodes_s))
+    s = 1.6*5/(ndivs)*ones(length(nodes_s))
     Ω = getElements(nodes_s, entities["Ω"])
     push!(nodes_s,:s₁=>s,:s₂=>s,:s₃=>s)
     type = ReproducingKernel{:Linear2D,:□,:CubicSpline}

@@ -5,14 +5,14 @@ using CairoMakie
 
 include("import_MorleysAcuteSkewPlate.jl")
 ndiv  = 32
-ndivs = 32
+ndivs = 52
 # elements, nodes, nodes_s, sp, type= import_MorleysAcuteSkewPlate_mix("msh/MorleysAcuteSkewPlate/MorleysAcuteSkewPlate_"*string(ndiv)*".msh","msh/MorleysAcuteSkewPlate/MorleysAcuteSkewPlate_"*string(ndivs)*".msh");
 # elements, nodes, nodes_s, sp, type= import_MorleysAcuteSkewPlate_mix("msh/MorleysAcuteSkewPlate/MorleysAcuteSkewPlate_"*string(ndiv)*".msh","msh/MorleysAcuteSkewPlate/MorleysAcuteSkewPlate_q_"*string(ndivs)*".msh");
 # elements, nodes, nodes_s, Ω, sp, type= import_MorleysAcuteSkewPlate_mix("msh/MorleysAcuteSkewPlate/MorleysAcuteSkewPlate_quad_"*string(ndiv)*".msh","msh/MorleysAcuteSkewPlate/MorleysAcuteSkewPlate_quad_"*string(ndivs)*".msh");
 # elements, nodes, nodes_s, sp, type= import_MorleysAcuteSkewPlate_mix("msh/MorleysAcuteSkewPlate/MorleysAcuteSkewPlate_quad_"*string(ndiv)*".msh","msh/MorleysAcuteSkewPlate/MorleysAcuteSkewPlate_quad_q_"*string(ndivs)*".msh");
-# elements, nodes, nodes_s, sp, type= import_MorleysAcuteSkewPlate_mix("msh/MorleysAcuteSkewPlate/MorleysAcuteSkewPlate_tri6_"*string(ndiv)*".msh","msh/MorleysAcuteSkewPlate/MorleysAcuteSkewPlate_tri6_"*string(ndivs)*".msh");
-elements, nodes, nodes_s, sp, type= import_MorleysAcuteSkewPlate_mix("msh/MorleysAcuteSkewPlate/MorleysAcuteSkewPlate_tri6_"*string(ndiv)*".msh","msh/MorleysAcuteSkewPlate/MorleysAcuteSkewPlate_tri6_q_"*string(ndivs)*".msh");
-# elements, nodes, nodes_s, sp, type= import_MorleysAcuteSkewPlate_mix("msh/MorleysAcuteSkewPlate/MorleysAcuteSkewPlate_quad8_"*string(ndiv)*".msh","msh/MorleysAcuteSkewPlate/MorleysAcuteSkewPlate_quad8_"*string(ndivs)*".msh");
+# elements, nodes, nodes_s, sp, type= import_MorleysAcuteSkewPlate_mix("msh/MorleysAcuteSkewPlate/MorleysAcuteSkewPlate_tri6_"*string(ndiv)*".msh","msh/MorleysAcuteSkewPlate/MorleysAcuteSkewPlate_"*string(ndivs)*".msh");
+# elements, nodes, nodes_s, sp, type= import_MorleysAcuteSkewPlate_mix("msh/MorleysAcuteSkewPlate/MorleysAcuteSkewPlate_tri6_"*string(ndiv)*".msh","msh/MorleysAcuteSkewPlate/MorleysAcuteSkewPlate_tri6_q_"*string(ndivs)*".msh");
+elements, nodes, nodes_s, sp, type= import_MorleysAcuteSkewPlate_mix("msh/MorleysAcuteSkewPlate/MorleysAcuteSkewPlate_quad8_"*string(ndiv)*".msh","msh/MorleysAcuteSkewPlate/MorleysAcuteSkewPlate_"*string(ndivs)*".msh");
 # elements, nodes, nodes_s, sp, type= import_MorleysAcuteSkewPlate_mix("msh/MorleysAcuteSkewPlate/MorleysAcuteSkewPlate_quad8_"*string(ndiv)*".msh","msh/MorleysAcuteSkewPlate/MorleysAcuteSkewPlate_quad8_q_"*string(ndivs)*".msh");
 
 nᵇ = length(nodes)
@@ -220,7 +220,7 @@ surface!(xs₃,ys₃,zeros(ind,ind),color=zs₃,colorrange=(-200,200),shading = 
 # save("./png/MorleysAcuteSkewPlate_tri6_q2_"*string(ndiv)*"_"*string(ndivs)*".png",fig, px_per_unit = 10.0)
 # save("./png/MorleysAcuteSkewPlate_quad4_q11_"*string(ndiv)*"_"*string(ndivs)*".png",fig, px_per_unit = 3.0)
 # save("./png/MorleysAcuteSkewPlate_quad4_q2_"*string(ndiv)*"_"*string(ndivs)*".png",fig, px_per_unit = 10.0)
-# save("./png/MorleysAcuteSkewPlate_quad8_q1_"*string(ndiv)*"_"*string(ndivs)*".png",fig, px_per_unit = 3.0)
+save("./png/MorleysAcuteSkewPlate_quad8_q1_"*string(ndiv)*"_"*string(ndivs)*".png",fig, px_per_unit = 3.0)
 # save("./png/MorleysAcuteSkewPlate_quad8_q2_"*string(ndiv)*"_"*string(ndivs)*".png",fig, px_per_unit = 10.0)
 
 fig

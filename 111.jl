@@ -1,6 +1,6 @@
 
 using ApproxOperator
-using CairoMakie, GeometryBasicsa
+using CairoMakie
 using GLMakie
 
 import Gmsh: gmsh
@@ -27,12 +27,12 @@ s_ = 4
 s = s_ .*ones(length(nodes_mf))
 push!(nodes_mf,:s=>s)
 type = ReproducingKernel{:Linear2D,:○,:CubicSpline}
-id = 14
+id = 17
 xₑ = nodes_mf[id].x
 yₑ = nodes_mf[id].y
 inte = 500
-xs = LinRange(2,10,inte)
-ys = LinRange(1,9,inte)
+xs = LinRange(2.5,9.5,inte)
+ys = LinRange(1.5,8,inte)
 zs = zeros(inte,inte)
 for (i,x) in enumerate(xs)
     for (j,y) in enumerate(ys)
@@ -87,10 +87,10 @@ for (i,elm) in enumerate(elements["Ω"])
 end
 
 # figure
-fig = Figure(backgroundcolor = :transparent) # 1 2
-ax = Axis( # 1 2
-# fig = Figure() # 3 4
-# ax = Axis3( # 3 4
+# fig = Figure(backgroundcolor = :transparent) # 1 2
+# ax = Axis( # 1 2
+fig = Figure(backgroundcolor = :transparent, resolution = (500, 500)) # 3 4
+ax = Axis3( # 3 4
     fig[1,1],
     xlabel = " ",
     ylabel = " ",
@@ -102,31 +102,32 @@ ax = Axis( # 1 2
     xgridvisible=false,
     ygridvisible=false,
     # zgridvisible=false,
-
+    # perspectiveness = 0.2,
     backgroundcolor = :transparent,
     
     # aspect = :data,
-    # aspect = (1,1,0.3), # 0.3(3) 0.2(4)
-    # azimuth = 1.5π, # 3
-    # elevation = 0.1π, # 3
+    aspect = (1,1,0.6), # 0.3(3) 0.2(4)
+    azimuth = 1.6π, # 3
+    elevation = 0.1π, # 3
+    # aspect = AxisAspect(2),
 )
 hidespines!(ax)
 hidedecorations!(ax)
 
-for elm in elements["Ω"]
-    𝓒 = elm.𝓒
-    x = [node.x for node in 𝓒[[1:end...,1]]]
-    y = [node.y for node in 𝓒[[1:end...,1]]]
+# for elm in elements["Ω"]
+#     𝓒 = elm.𝓒
+#     x = [node.x for node in 𝓒[[1:end...,1]]]
+#     y = [node.y for node in 𝓒[[1:end...,1]]]
     # lines!(x,y, color=:black, linewidth = 1.5) # 1 3
-    lines!(ax,x,y, color=:lightgrey, linewidth = 1.5) # 2 5
-#     # lines!(ax,x,y, color=:grey, linewidth = 1.5) # 4
-end
-for elm in elements["Γ"]
-    𝓒 = elm.𝓒
-    x = [node.x for node in 𝓒[1:end]]
-    y = [node.y for node in 𝓒[1:end]]
-    lines!(x,y, color=:skyblue4, linewidth = 5) # linewidth = 5(1,2) 3(3,4)
-end
+#     # lines!(ax,x,y, color=:lightgrey, linewidth = 1.5) # 2 5
+    # lines!(ax,x,y, color=:lightgrey, linewidth = 1.5) # 4
+# end
+# for elm in elements["Γ"]
+#     𝓒 = elm.𝓒
+#     x = [node.x for node in 𝓒[1:end]]
+#     y = [node.y for node in 𝓒[1:end]]
+#     lines!(x,y, color=(:skyblue4,0.0), linewidth = 6) # linewidth = 5(1,2) 3(3,4)
+# end
 
 
 # save("./png/cloud_1.png",fig, px_per_unit = 10.0) # 1
@@ -134,24 +135,29 @@ end
 
 # xₚ = [node.x for node in nodes_mf] # 
 # yₚ = [node.y for node in nodes_mf] #
-xₚ = [node.x for node in nodes_mf_Γ] # 2 4
-yₚ = [node.y for node in nodes_mf_Γ] # 2 4
-scatter!(ax, xₚ, yₚ, marker = :circle, markersize = 20, color = :black) # 2 4
+# xₚ = [node.x for node in nodes_mf_Γ] # 2 4
+# yₚ = [node.y for node in nodes_mf_Γ] # 2 4
+# scatter!(ax, xₚ, yₚ, marker = :circle, markersize = 25, color = :dodgerblue) # 2 4
+
+# x1 = [node.x for node in nodes] # 
+# y1 = [node.y for node in nodes] #
+# scatter!(ax, x1, y1, marker = :circle, markersize = 20, color = :black) # 2 4
+
 # scatter!(ax, xₚ[id], yₚ[id], marker = :circle, markersize = 20, color = :red)
-p_big = decompose(Point2f, Circle(Point2f(0),1))
-p_small = decompose(Point2f, Circle(Point2f(0),0.99))
-scatter!(ax, xₚ[id], yₚ[id], marker = Polygon(p_big,[p_small]), markersize = 145, color = :dodgerblue) # 2
+# p_big = decompose(Point2f, Circle(Point2f(0),1))
+# p_small = decompose(Point2f, Circle(Point2f(0),0.99))
+# scatter!(ax, xₚ[id], yₚ[id], marker = Polygon(p_big,[p_small]), markersize = 145, color = :dodgerblue) # 2
 # scatter!(ax, xₚ, yₚ, marker = Polygon(p_big,[p_small]), markersize = 60, color = :dodgerblue)
-arc!(Point2f(xₚ[id],yₚ[id]),4,0,2π,linewidth = 1.5,color = :salmon)
-for (x,y) in zip(xₚ,yₚ)
-    arc!(Point2f(x,y),1.5,0,2π,linewidth = 1,color = :dodgerblue)
-end
-xₚ = [5.0+(rand()-0.5) for i in 1:8]
-yₚ = [5.0+(rand()-0.5) for i in 1:8]
-scatter!(ax, xₚ, yₚ, marker = :circle, markersize = 20, color = :black)
-for (x,y) in zip(xₚ,yₚ)
-    arc!(Point2f(x,y),1.5,0,2π,linewidth = 1,color = :dodgerblue)
-end
+# arc!(Point2f(xₚ[id],yₚ[id]),4,0,2π,linewidth = 1.5,color = :salmon)
+# for (x,y) in zip(xₚ,yₚ)
+#     arc!(Point2f(x,y),1.5,0,2π,linewidth = 1,color = :dodgerblue)
+# end
+# xₚ = [5.0+(rand()-0.5) for i in 1:8]
+# yₚ = [5.0+(rand()-0.5) for i in 1:8]
+# scatter!(ax, xₚ, yₚ, marker = :circle, markersize = 20, color = :black)
+# for (x,y) in zip(xₚ,yₚ)
+#     arc!(Point2f(x,y),1.5,0,2π,linewidth = 1,color = :dodgerblue)
+# end
 # save("./png/cloud_2.png",fig, px_per_unit = 10.0)
 # save("./png/cloud_5.png",fig, px_per_unit = 10.0)
 # save("./png/cloud_6.png",fig, px_per_unit = 10.0)
@@ -163,17 +169,17 @@ end
 #     colormap=:Spectral,
 #     colorrange = (0,1),
 #     transparency=false,
-    # shading = false,
-# )
-# save("./png/cloud_3.png",fig, px_per_unit = 10.0) # 3
-
-# surface!(xs, ys, zs,
-#     colormap = :Spectral,
-#     colorrange = (0,1),
-#     transparency = false,
 #     shading = false,
 # )
+# save("./png/cloud_3.png",fig, px_per_unit = 20.0) # 3
 
-# save("./png/cloud_4.png",fig, px_per_unit = 10.0) # 4
+surface!(xs, ys, zs,
+    colormap = :Spectral,
+    colorrange = (0.0,1),
+    transparency = false,
+    shading = false,
+)
+
+save("./png/cloud_4.png",fig, px_per_unit = 10.0) # 4
 
 fig

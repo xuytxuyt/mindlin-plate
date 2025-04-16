@@ -3,8 +3,8 @@ using CairoMakie
 using SparseArrays, Pardiso
 import BenchmarkExample: BenchmarkExample
 include("import_SquarePlate.jl")
-ndiv   = 8
-ndivs  = 6
+ndiv   = 32
+ndivs  = 25
 # ndivs2 = 16
 
 # elements, nodes, nodes_s, Ω, sp, type = import_SquarePlate_mix("msh/SquarePlate/SquarePlate_"*string(ndiv)*".msh","msh/SquarePlate/SquarePlate_"*string(ndivs)*".msh");
@@ -13,10 +13,10 @@ ndivs  = 6
 # elements, nodes, nodes_s, Ω, sp, type = import_SquarePlate_mix("msh/SquarePlate/SquarePlate_quad_"*string(ndiv)*".msh","msh/SquarePlate/SquarePlate_quad_"*string(ndivs)*".msh");
 # elements, nodes, nodes_s, Ω, sp, type = import_SquarePlate_mix("msh/SquarePlate/SquarePlate_quad_"*string(ndiv)*".msh","msh/SquarePlate/SquarePlate_quad_q_"*string(ndivs)*".msh");
 # elements, nodes, nodes_s, Ω, sp, type = import_SquarePlate_mix("msh/SquarePlate/SquarePlate_quad_"*string(ndiv)*".msh","msh/SquarePlate/SquarePlate_quad_"*string(ndivs)*"_"*string(ndivs2)*".msh");
-# elements, nodes, nodes_s, Ω, sp, type = import_SquarePlate_mix("msh/SquarePlate/SquarePlate_tri6_"*string(ndiv)*".msh","msh/SquarePlate/SquarePlate_tri6_"*string(ndivs)*".msh");
+elements, nodes, nodes_s, Ω, sp, type = import_SquarePlate_mix("msh/SquarePlate/SquarePlate_tri6_"*string(ndiv)*".msh","msh/SquarePlate/SquarePlate_tri6_"*string(ndivs)*".msh");
 # elements, nodes, nodes_s, Ω, sp, type = import_SquarePlate_mix("msh/SquarePlate/SquarePlate_tri6_"*string(ndiv)*".msh","msh/SquarePlate/SquarePlate_tri6_q_"*string(ndivs)*".msh");
 # elements, nodes, nodes_s, Ω, sp, type = import_SquarePlate_mix("msh/SquarePlate/SquarePlate_tri6_"*string(ndiv)*".msh","msh/SquarePlate/SquarePlate_tri6_"*string(ndivs)*"_"*string(ndivs2)*".msh");
-elements, nodes, nodes_s, Ω, sp, type = import_SquarePlate_mix("msh/SquarePlate/SquarePlate_quad8_"*string(ndiv)*".msh","msh/SquarePlate/SquarePlate_quad8_"*string(ndivs)*".msh");
+# elements, nodes, nodes_s, Ω, sp, type = import_SquarePlate_mix("msh/SquarePlate/SquarePlate_quad8_"*string(ndiv)*".msh","msh/SquarePlate/SquarePlate_quad8_"*string(ndivs)*".msh");
 # elements, nodes, nodes_s, Ω, sp, type = import_SquarePlate_mix("msh/SquarePlate/SquarePlate_quad8_"*string(ndiv)*".msh","msh/SquarePlate/SquarePlate_quad8_q_"*string(ndivs)*".msh");
 # elements, nodes, nodes_s, Ω, sp, type = import_SquarePlate_mix("msh/SquarePlate/SquarePlate_quad8_"*string(ndiv)*".msh","msh/SquarePlate/SquarePlate_quad8_"*string(ndivs)*"_"*string(ndivs2)*".msh");
 
@@ -207,7 +207,7 @@ contour!(xs,ys,zs,levels=-0.000025:0.00000715:0.000025,color=:azure)
 # Colorbar(fig[1,2], limits=(-0.000025,0.000025), colormap=:lightrainbow)
 # save("./png/SquarePlate_mix_tri3_q1_"*string(ndiv)*"_"*string(ndivs)*".png",fig, px_per_unit = 3.0)
 # save("./png/SquarePlate_mix_tri3_q2_"*string(ndiv)*"_"*string(ndivs)*".png",fig, px_per_unit = 10.0)
-# save("./png/SquarePlate_mix_tri6_q1_"*string(ndiv)*"_"*string(ndivs)*".png",fig, px_per_unit = 3.0)
+save("./png/SquarePlate_mix_tri6_q1_"*string(ndiv)*"_"*string(ndivs)*".png",fig, px_per_unit = 3.0)
 # save("./png/SquarePlate_mix_colorbar.png",fig, px_per_unit = 10.0)
 # save("./png/SquarePlate_mix_tri6_q2_"*string(ndiv)*"_"*string(ndivs)*".png",fig, px_per_unit = 10.0)
 # save("./png/SquarePlate_mix_quad4_q1_"*string(ndiv)*"_"*string(ndivs)*".png",fig, px_per_unit = 3.0)
